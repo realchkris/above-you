@@ -1,0 +1,1 @@
+<!-- PURPOSE: Allows users to switch between light and dark mode. -->

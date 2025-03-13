@@ -1,0 +1,1 @@
+<!-- PURPOSE: Shows temperature, cloud cover, and visibility. -->

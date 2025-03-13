@@ -1,0 +1,1 @@
+<!-- PURPOSE: Displays visible celestial bodies. -->
