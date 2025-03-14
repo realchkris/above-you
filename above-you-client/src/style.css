@@ -27,12 +27,16 @@
 }
 
 /* Common DOM elements */
-.color-container {
+.base-container {
   @apply rounded-lg shadow-md p-4;
 }
 
 .header-container {
-  @apply p-4 w-screen flex justify-between fixed top-0 left-0;
+  @apply bg-ay-dark p-4 w-screen flex justify-between fixed top-0 left-0 z-50;
+}
+
+.dashboard-container {
+  @apply base-container bg-ay-lavender w-full max-w-screen-xl mx-auto;
 }
 
 /* General Image Styling */
@@ -102,8 +106,6 @@ a:hover {
 }
 
 body {
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
