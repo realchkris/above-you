@@ -2,12 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Useful CSS classes */
+/* USEFUL CSS CLASSES */
 
-.color-container {
-  @apply rounded-lg shadow-md p-4;
-}
-
+/* Backgrounds */
 .bg-ay-purple {
   background-color: theme('colors.ayPurple');
 }
@@ -18,7 +15,7 @@
 
 .bg-ay-lavender {
   background-color: theme('colors.ayLavender');
-  color: black; /* Adjust text color for contrast */
+  color: black;
 }
 
 .bg-ay-green {
@@ -29,23 +26,56 @@
   background-color: theme('colors.ayTeal');
 }
 
+/* Common DOM elements */
+.color-container {
+  @apply rounded-lg shadow-md p-4;
+}
+
 .header-container {
-  @apply p-8 w-screen flex justify-between fixed top-0 left-0;
+  @apply p-4 w-screen flex justify-between fixed top-0 left-0;
 }
 
+/* General Image Styling */
 .image-container {
-  @apply h-10 w-10 object-contain;
+  @apply object-contain w-auto h-auto;
 }
 
+/* Image Sizes */
+.image-sm {
+  @apply w-10 h-10;
+}
+
+.image-md {
+  @apply w-16 h-16;
+}
+
+.image-lg {
+  @apply w-20 h-20;
+}
+
+/* Icon Styling */
 .icon-button {
-  @apply absolute w-1/5 h-1/5 object-contain;
+  @apply object-contain w-full h-full;
 }
 
+.icon-sm {
+  @apply w-6 h-6;
+}
+
+.icon-md {
+  @apply w-8 h-8;
+}
+
+.icon-lg {
+  @apply w-10 h-10;
+}
+
+/* Buttons */
 .round-button {
-  @apply w-12 h-12 flex rounded-full items-center justify-center shadow-md transition duration-200 ease-in-out;
+  @apply w-12 h-12 flex items-center justify-center rounded-full shadow-md transition duration-200 ease-in-out p-1;
 }
 
-/* Default stuff */
+/* DEFAULT CSS */
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
