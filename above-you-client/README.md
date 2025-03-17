@@ -1,7 +1,7 @@
 # Above You Frontend
 
 ## Interface Preview  
-![Above You Interface](/src/current_interface_preview.png)
+![Above You Interface](current_interface_preview.png)
 
 ## Interface Core Sections (Components)
 
