@@ -16,6 +16,11 @@ const PORT = process.env.PORT || 5000;
 // Initializing CORS
 app.use(cors(corsOptions));
 
+// Middleware to log requests
+app.use((req, res, next) => {
+    console.log(`Request received: ${req.method} ${req.originalUrl}`);
+    next(); // Pass control to the next middleware or route handler
+});
 
 // Proxy makes a Reverse Geocoding Request to OpenStreetMap (OSM)
 // Reverse Geocoding: Converts latitude/longitude into a human-readable address (city, street, country).
@@ -43,8 +48,6 @@ app.get("/api/reverse-geocode", async (req, res) => {
 		console.error("Error fetching geolocation data:", error);
 		res.status(500).json({ error: "Internal Server Error" });
 	}
-
-	app.listen(PORT, () => console.log(`Proxy server running on port ${PORT}`));
 
 });
 
