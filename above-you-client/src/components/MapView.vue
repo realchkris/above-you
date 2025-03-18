@@ -12,6 +12,19 @@ import { onMounted, nextTick } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+// Avoid Leaflet missing icons issue by manually stating where to find the icons
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+const defaultIcon = L.icon({
+	iconUrl: markerIcon,
+	shadowUrl: markerShadow,
+	iconSize: [25, 41], // Default size
+	iconAnchor: [12, 41], // Adjust anchor
+	popupAnchor: [1, -34],
+	shadowSize: [41, 41]
+});
+
 let map; // Variable used for the map
 
 let lastOSMCoords = null; // Stores last OSM API call position
@@ -98,7 +111,8 @@ onMounted(() => {
 			if (!lastOSMCoords) {
 				lastOSMCoords = { lat, lon };
 				map.setView([lat, lon], 13);
-				userMarker = L.marker([lat, lon]).addTo(map);
+				userMarker = L.marker([lat, lon], { icon: defaultIcon }).addTo(map);
+
 			}
 
 			console.log("Browser GPS Coordinates:", lat, lon);

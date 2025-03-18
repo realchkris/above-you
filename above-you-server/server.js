@@ -3,12 +3,18 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 
+const corsOptions = {
+    origin: "*", // Allows all domains (for testing)
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    allowedHeaders: "Content-Type,Authorization"
+};
+
 // Initializing app
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Initializing CORS
-app.use(cors());
+app.use(cors(corsOptions));
 
 
 // Proxy makes a Reverse Geocoding Request to OpenStreetMap (OSM)
