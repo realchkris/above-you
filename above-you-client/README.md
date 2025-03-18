@@ -1,13 +1,17 @@
-# Above You Frontend
+# 🎨 Above You — Frontend
 
 ## 🌌 Overview
-The frontend is built using Vue 3, Leaflet.js, and TailwindCSS, offering an intuitive and responsive user experience.
+Minimal frontend offering an intuitive and responsive user experience.
 
-## Current Interface Preview  
+## 🏗️ Tech Stack
+- Vue.js
+- Leaflet
+- TailwindCSS
+
+## 👁️ Current Interface Preview  
 ![Above You Interface](current_interface_preview.png)
 
-## Interface Core Sections (Components)
-
+## 🧱 Interface Core Sections (Components)
 - **Header/Navbar** – Displays app title and navigation.
 - **Main Dashboard** – The primary section showing all real-time data.
     - **Weather Conditions** (temperature, cloud cover, visibility).
@@ -18,7 +22,6 @@ The frontend is built using Vue 3, Leaflet.js, and TailwindCSS, offering an intu
 - **Login Modal/Popup** – If user authentication is added later.
 
 ## 🗺️ Map & Geolocation Handling
-
 - Uses Leaflet.js to display the user’s location.
 - Implements OSM Reverse Geocoding through a backend proxy.
 - Uses navigator.geolocation.watchPosition() for real-time tracking.
