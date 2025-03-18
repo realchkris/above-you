@@ -18,6 +18,8 @@ let lastOSMCoords = null; // Stores last OSM API call position
 const distanceThreshold = 100; // Measured in meters (100m)
 let userMarker = null; // Stores the current user position marker
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Server URL
+
 // Function to check if to make an OSM API call is necessary (reduces API calls)
 function shouldUpdateLocation(newLat, newLon) {
 
@@ -104,7 +106,7 @@ onMounted(() => {
 			// Avoiding excessive API calls by checking if the user has moved a significant distance
 			if(shouldUpdateLocation(lat, lon)){
 
-				fetch(`/api/reverse-geocode?lat=${lat}&lon=${lon}`)
+				fetch(`${API_BASE_URL}/api/reverse-geocode?lat=${lat}&lon=${lon}`)
 					.then(response => response.json())
 					.then(data => {
 
