@@ -1,7 +1,11 @@
 <template>
+
+	<div class="base-container bg-ay-dark text-white mb-4 text-ellipsis overflow-hidden whitespace-pre-wrap min-h-[40px] max-w-80">📍 {{userLocation}}</div>
+
 	<div class="map-container">
 		<div id="map"></div>
 	</div>
+
 </template>
 
 <script setup>
@@ -23,7 +27,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000
 // Default to 15 sec if env is missing
 const GEO_TIMEOUT = parseInt(import.meta.env.VITE_GEOLOCATION_TIMEOUT || "15000", 10);
 
-// Default to 30000 if env is missing
+// Default to 30 sec old data if env is missing
 const MAXIMUM_AGE = parseInt(import.meta.env.VITE_GEOLOCATION_MAXIMUM_AGE || "30000", 10);
 
 // Distance Threshold (meters)
@@ -41,6 +45,11 @@ const defaultIcon = L.icon({
 	popupAnchor: [1, -34],
 	shadowSize: [41, 41]
 });
+
+// User address
+const userLocation = ref("Locating..."); // Default text
+
+const CENTER_THRESHOLD = 1000; // Meters before auto-centering the map again
 
 // Haversine Formula to calculate real-world distance (in meters)
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -122,21 +131,29 @@ async function handleGeolocationSuccess(position) {
 
 	console.log("[GPS Coordinates]:", lat, lon);
 
+	// Recenter map if necessary
+	if (shouldRecenterMap(lat, lon)) {
+		map.value.setView([lat, lon], 13);
+  }
+
 	// First-time setup: Center map & store initial position
 	if (!lastOSMCoords) {
 
 		lastOSMCoords = { lat, lon };
 		map.value.setView([lat, lon], 13);
 		userMarker = L.marker([lat, lon], { icon: defaultIcon }).addTo(map.value);
-		await fetchReverseGeocode(lat, lon); // Initial API call
+
+		userLocation.value = await fetchReverseGeocode(lat, lon); // Initial API call
 		return;
 
 	}
 
-	// If moved significantly, update location
+	// If user has moved significantly, update marker position
 	if (shouldUpdateLocation(lat, lon)) {
-		await fetchReverseGeocode(lat, lon);
+
 		map.value.setView([lat, lon], 13); // Center map
+		userLocation.value = await fetchReverseGeocode(lat, lon);
+
 	}
 
 	// Update user marker
@@ -193,6 +210,17 @@ onMounted(() => {
 window.addEventListener("resize", () => {
 	if (map.value) setTimeout(() => map.value.invalidateSize(), 300);
 });
+
+function shouldRecenterMap(lat, lon) {
+
+	if (!map.value) return false;
+
+	const currentCenter = map.value.getCenter();
+	const distance = getDistance(currentCenter.lat, currentCenter.lng, lat, lon);
+
+	return distance > CENTER_THRESHOLD; // If user moved > 1km, recenter
+
+}
 
 </script>
 
