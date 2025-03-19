@@ -6,7 +6,7 @@
 
 <script setup>
 
-import { onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -105,12 +105,12 @@ async function fetchReverseGeocode(lat, lon) {
 function initializeMap() {
 
 	map.value = L.map("map").setView([51.505, -0.09], 13);
-	L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-		attribution: '&copy; OpenStreetMap contributors'
-	}).addTo(map);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map.value);
 
 	// Fix tile rendering issue
-	setTimeout(() => map.invalidateSize(), 300);
+	setTimeout(() => map.value.invalidateSize(), 300);
 
 }
 
