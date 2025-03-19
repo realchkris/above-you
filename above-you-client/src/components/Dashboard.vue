@@ -18,7 +18,9 @@
 
 		    <!-- ISS Tracker Card -->
 		    <div class="base-container bg-ay-green text-white">
-		    	<ISSFlyover />
+		    	<ISSFlyover
+		    		:userCoordinates="userCoordinates"
+		    	/>
 		    </div>
 
 		</section>
@@ -26,6 +28,7 @@
 		<section class="base-container bg-ay-lavender w-full">
 			<MapView
 				@errorOccurred="handleError"
+				@userLocationUpdated="updateUserLocation"
 			/>
 		</section>
 		
@@ -40,11 +43,19 @@ import CelestialObjects from './CelestialObjects.vue'
 import ISSFlyover from './ISSFlyover.vue'
 import MapView from './MapView.vue'
 
+import { ref } from "vue";
+
 const emit = defineEmits(["errorOccurred"]);
+const userCoordinates = ref({ lat: null, lon: null });
 
 // Pass errors up to parent component
 const handleError = (message) => {
   emit("errorOccurred", message);
 };
+
+// Function to update user location from MapView.vue
+function updateUserLocation(coords) {
+    userCoordinates.value = coords;
+}
 
 </script>

@@ -3,15 +3,18 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 
+// Environment variables (+ fallback)
+const PORT = process.env.PORT || 5000;
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*"; // Default to "*" if not set
+
 const corsOptions = {
-    origin: "*", // Allows all domains (for testing)
+    origin: ALLOWED_ORIGIN,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     allowedHeaders: "Content-Type,Authorization"
 };
 
 // Initializing app
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 // Initializing CORS
 app.use(cors(corsOptions));
@@ -47,6 +50,23 @@ app.get("/api/reverse-geocode", async (req, res) => {
 	} catch (error) {
 		console.error("Error fetching geolocation data:", error);
 		res.status(500).json({ error: "Internal Server Error" });
+	}
+
+});
+
+// Fetch ISS Current Location from Where The ISS Is
+app.get("/api/iss-flyover", async (req, res) => {
+
+	try {
+
+		const response = await axios.get("http://api.open-notify.org/iss-now.json");
+		const { latitude, longitude } = response.data.iss_position;
+
+		res.json({ latitude, longitude });
+
+	} catch (error) {
+		console.error("Error fetching ISS location:", error);
+		res.status(500).json({ error: "Failed to retrieve ISS location" });
 	}
 
 });

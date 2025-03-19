@@ -1,6 +1,17 @@
+<!-- PURPOSE: Shows the map and the user's real-time position. -->
 <template>
 
-	<div class="base-container bg-ay-dark text-white mb-4 text-ellipsis overflow-hidden whitespace-pre-wrap min-h-[40px] max-w-80">📍 {{userLocation}}</div>
+	<div
+		class="base-container bg-ay-dark text-white mb-4 text-ellipsis overflow-hidden whitespace-pre-wrap min-h-[40px] max-w-80"
+	>📍 {{userLocation}}</div>
+
+	<!-- Live Latitude & Longitude -->
+	<div class="flex gap-4 text-white bg-ay-dark p-2 rounded-md mb-4 justify-center">
+
+		<span>Lat: {{ userCoordinates.lat || "..." }}</span>
+		<span>Lon: {{ userCoordinates.lon || "..." }}</span>
+
+	</div>
 
 	<div class="map-container">
 		<div id="map"></div>
@@ -14,8 +25,10 @@ import { ref, onMounted, nextTick } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+import { getDistance } from "../utils/geolocation.js";
+
 // Emits to notify parent component
-const emit = defineEmits(["errorOccurred"]);
+const emit = defineEmits(["errorOccurred", "userLocationUpdated"]);
 
 const map = ref(null); // Variable used for the map
 
@@ -49,30 +62,11 @@ const defaultIcon = L.icon({
 	shadowSize: [41, 41]
 });
 
-// User address
-const userLocation = ref("Locating..."); // Default text
+
+const userLocation = ref("Locating..."); // User address (+ default text)
+const userCoordinates = ref({ lat: null, lon: null }); // Used for storing lat and lon real-time
 
 const CENTER_THRESHOLD = 1000; // Meters before auto-centering the map again
-
-// Haversine Formula to calculate real-world distance (in meters)
-function getDistance(lat1, lon1, lat2, lon2) {
-
-	const R = 6371e3; // Earth’s radius in meters
-	const toRad = (x) => (x * Math.PI) / 180;
-
-	const dLat = toRad(lat2 - lat1);
-	const dLon = toRad(lon2 - lon1);
-
-	const a =
-		Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-		Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-		Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-	return R * c; // Returns distance in meters
-
-}
 
 // Check if an OSM API call is necessary (reduces API calls)
 function shouldUpdateLocation(newLat, newLon) {
@@ -136,6 +130,9 @@ async function handleGeolocationSuccess(position) {
 
 	console.log("[GPS Coordinates]:", lat, lon);
 
+	// Update the ref with new coordinates
+	userCoordinates.value = { lat, lon };
+
 	// Recenter map if necessary
 	if (shouldRecenterMap(lat, lon)) {
 		map.value.setView([lat, lon], 13);
@@ -167,6 +164,9 @@ async function handleGeolocationSuccess(position) {
 	} else {
 		userMarker = L.marker([lat, lon], { icon: defaultIcon }).addTo(map.value);
 	}
+
+	// Emit updated user location to parent (Dashboard)
+	emit("userLocationUpdated", userCoordinates.value);
 
 }
 
