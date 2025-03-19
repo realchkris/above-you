@@ -150,10 +150,33 @@ onMounted(() => {
 		},
 
 		// Error occurring case
-		(error) => { console.error("Geolocation error:", error); },
+		(error) => {
+
+			console.error("Geolocation error:", error);
+
+			switch (error.code) {
+
+				case error.PERMISSION_DENIED:
+					alert("Location access denied. Please allow location access.");
+					break;
+
+				case error.POSITION_UNAVAILABLE:
+					alert("Location unavailable. Try moving to an open area.");
+					break;
+
+				case error.TIMEOUT:
+					alert("Location request timed out. Please try again.");
+					break;
+
+				default:
+					alert("An unknown location error occurred.");
+
+			}
+
+		},
 
 		// Configuration settings
-		{ enableHighAccuracy: true } // More accurate tracking
+		{ enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } // More accurate tracking
 
 	);
 
