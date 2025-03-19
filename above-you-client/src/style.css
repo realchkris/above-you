@@ -39,6 +39,12 @@
   @apply base-container bg-ay-lavender w-full max-w-screen-xl mx-auto;
 }
 
+.error-container {
+  @apply base-container bg-red-500 text-white font-bold;
+  @apply fixed top-4 left-1/2 transform -translate-x-1/2 transition-opacity duration-500 ease-in-out;
+  opacity: 1;
+}
+
 /* General Image Styling */
 .image-container {
   @apply object-contain w-auto h-auto;

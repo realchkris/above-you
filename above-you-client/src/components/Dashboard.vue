@@ -24,7 +24,9 @@
 		</section>
 
 		<section class="base-container bg-ay-lavender w-full">
-			<MapView />
+			<MapView
+				@errorOccurred="handleError"
+			/>
 		</section>
 		
 	</div>
@@ -37,5 +39,12 @@ import WeatherCard from './WeatherCard.vue'
 import CelestialObjects from './CelestialObjects.vue'
 import ISSFlyover from './ISSFlyover.vue'
 import MapView from './MapView.vue'
+
+const emit = defineEmits(["errorOccurred"]);
+
+// Pass errors up to parent component
+const handleError = (message) => {
+  emit("errorOccurred", message);
+};
 
 </script>

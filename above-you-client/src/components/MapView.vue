@@ -14,6 +14,9 @@ import { ref, onMounted, nextTick } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+// Emits to notify parent component
+const emit = defineEmits(["errorOccurred"]);
+
 const map = ref(null); // Variable used for the map
 
 let userMarker = null; // Stores the current user position marker
@@ -95,7 +98,8 @@ async function fetchReverseGeocode(lat, lon) {
 
 		if (data.error) {
 			console.warn("[Reverse Geocoding] API Error:", data.error);
-			return null;
+			emit("errorOccurred", "❌ Unable to retrieve location. Try again later.");
+			return "Unavailable";
 		}
 
 		console.log("[Updated Location]:", data.display_name);
@@ -105,7 +109,8 @@ async function fetchReverseGeocode(lat, lon) {
 
 	} catch (error) {
 		console.error("[Reverse Geocoding] Network Error:", error);
-		return null;
+		emit("errorOccurred", "❌ Network error. Please check your connection.");
+		return "Unavailable";
 	}
 	
 }
@@ -170,21 +175,25 @@ function handleGeolocationError(error) {
 
 	console.error("[Geolocation Error]:", error);
 
+	let errorMessage = "❓ Unknown location error occurred.";
+
 	switch (error.code) {
 
 		case error.PERMISSION_DENIED:
-			alert("❌ Location access denied. Please enable location permissions in your browser settings.");
+			errorMessage = "❌ Location access denied. Please enable location permissions.";
 			break;
 		case error.POSITION_UNAVAILABLE:
-			alert("⚠️ Location unavailable. Try moving to an open area.");
+			errorMessage = "⚠️ Location unavailable. Try moving to an open area.";
 			break;
 		case error.TIMEOUT:
-			alert("⏳ Location request timed out. Try again in a better signal area.");
+			errorMessage = "⏳ Location request timed out. Try again in a better signal area.";
 			break;
 		default:
-			alert("❓ Unknown location error occurred.");
+			errorMessage = "❓ Unknown location error occurred.";
 
 	}
+
+  emit("errorOccurred", errorMessage); // Emit error to parent
 
 }
 
