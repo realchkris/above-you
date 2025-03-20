@@ -4,25 +4,26 @@
 Minimal frontend offering an intuitive and responsive user experience.
 
 ## 🏗️ Tech Stack
-- Vue.js
-- Leaflet
-- TailwindCSS
+- **Vue.js** – Reactive UI framework
+- **Leaflet** – Interactive maps & geolocation
+- **TailwindCSS** – Styling & animations
 
-## 👁️ Current Interface Preview  
-![Above You Interface](current_interface_preview.png)
+## ⚙️ Core Features (+ Progress)
+- [✔️] **Core UI Layout** – Header, dashboard, and component structure
+- [✔️] **Live Map Tracking** – User location via Leaflet + OSM Reverse Geocoding
+- [✔️] **Real-Time ISS Tracking** – Fetches ISS location and calculates distance
+- [🚧] **Performance Optimization** – Reduce API calls, improve load times
+- [🚧] **Refined Error Handling** – Centralized alerts instead of browser popups
+- [🚧] **Improved UX/UI** – Better animations, loading indicators
+- [   ] **Local Storage Caching** - User location & other data gets saved in localStorage to avoid unnecessary API calls
+- [   ] **Weather & Celestial Data** – Integration with external APIs
 
-## 🧱 Interface Core Sections (Components)
-- **Header/Navbar** – Displays app title and navigation.
-- **Main Dashboard** – The primary section showing all real-time data.
-    - **Weather Conditions** (temperature, cloud cover, visibility).
-    - **Celestial Objects** (retrieved from NASA API).
-    - **ISS Flyover Times** (when ISS will be visible).
-- **Dark Mode Toggle** – Switch between light and dark themes for better usability.
-- **Location Selector** – If users can check sky conditions elsewhere.
-- **Login Modal/Popup** – If user authentication is added later.
+## 🔜 Upcoming features
+- [   ] **Dark Mode Support**
+- [   ] **Authentication System** – User can make an account
+- [   ] **Custom Location Selection** – Check sky conditions anywhere by saving your favorite locations
 
 ## 🗺️ Map & Geolocation Handling
-- Uses Leaflet.js to display the user’s location.
-- Implements OSM Reverse Geocoding through a backend proxy.
-- Uses navigator.geolocation.watchPosition() for real-time tracking.
-- Frontend caching to reduce API calls, using the Haversine Formula
+- **Real-time Tracking** – Uses navigator.geolocation.watchPosition()
+- **Efficient API Calls** – Backend proxy for OSM Reverse Geocoding
+- **Distance Calculation** – Haversine Formula to optimize updates
