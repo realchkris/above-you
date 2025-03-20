@@ -2,14 +2,29 @@
 <template>
 
 	<div
-		class="base-container bg-ay-dark text-white mb-4 text-ellipsis overflow-hidden whitespace-pre-wrap min-h-[40px] max-w-80"
-	>📍 {{userLocation}}</div>
+		class="base-container bg-ay-dark text-white mb-4 min-h-[40px] max-w-80 justify-center"
+	>
+	<span class="font-bold">📍 You</span>
+	<div class="text-ellipsis overflow-hidden whitespace-pre-wrap">
+		<span v-if="isLoadingLocation" class="loader"></span>
+		<span v-else>{{ userLocation }}</span>
+	</div>
+	</div>
 
 	<!-- Live Latitude & Longitude -->
 	<div class="flex gap-4 text-white bg-ay-dark p-2 rounded-md mb-4 justify-center">
 
-		<span>Lat: {{ userCoordinates.lat || "..." }}</span>
-		<span>Lon: {{ userCoordinates.lon || "..." }}</span>
+		<div class="flex flex-col items-center">
+			<span class="font-bold">Lat</span>
+			<span v-if="isLoadingCoordinates" class="loader"></span>
+			<span v-else>{{ userCoordinates.lat }}</span>
+		</div>
+
+		<div class="flex flex-col items-center">
+			<span class="font-bold">Lon</span>
+			<span v-if="isLoadingCoordinates" class="loader"></span>
+			<span v-else>{{ userCoordinates.lon }}</span>
+		</div>
 
 	</div>
 
@@ -40,14 +55,10 @@ let lastOSMCoords = null; // Stores last OSM API call position
 // Server URL (or localhost)
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
-// Default to 15 sec if env is missing
-const GEO_TIMEOUT = parseInt(import.meta.env.VITE_GEOLOCATION_TIMEOUT || "15000", 10);
-
-// Default to 30 sec old data if env is missing
-const MAXIMUM_AGE = parseInt(import.meta.env.VITE_GEOLOCATION_MAXIMUM_AGE || "30000", 10);
-
-// Distance Threshold (meters)
-const DISTANCE_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOLD || "100", 10);
+// Default values for Geolocation settings
+const GEO_TIMEOUT = parseInt(import.meta.env.VITE_GEOLOCATION_TIMEOUT || "15000", 10); // Default to 15 sec if env is missing
+const MAXIMUM_AGE = parseInt(import.meta.env.VITE_GEOLOCATION_MAXIMUM_AGE || "30000", 10); // Default to 30 sec old data if env is missing
+const DISTANCE_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOLD || "100", 10); // Distance Threshold (meters)
 
 // Fix Leaflet missing icons issue
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -62,28 +73,19 @@ const defaultIcon = L.icon({
 	shadowSize: [41, 41]
 });
 
-
 const userLocation = ref("Locating..."); // User address (+ default text)
 const userCoordinates = ref({ lat: null, lon: null }); // Used for storing lat and lon real-time
 
+// Loading states
+const isLoadingLocation = ref(true);
+const isLoadingCoordinates = ref(true);
+
 const CENTER_THRESHOLD = 1000; // Meters before auto-centering the map again
-
-// Check if an OSM API call is necessary (reduces API calls)
-function shouldUpdateLocation(newLat, newLon) {
-
-	// If it's the first time, always fetch OSM coordinates
-	if (!lastOSMCoords) return true;
-
-	// Destructuring latitude and longitude from lastOSMCoords
-	const { lat, lon } = lastOSMCoords;
-
-	// If the user has moved far enough, return true
-	return getDistance(lat, lon, newLat, newLon) > DISTANCE_THRESHOLD;
-
-}
 
 // Fetch location details via Reverse Geocoding API
 async function fetchReverseGeocode(lat, lon) {
+
+	isLoadingLocation.value = true; // Loader appears before fetching
 
 	try {
 
@@ -102,9 +104,13 @@ async function fetchReverseGeocode(lat, lon) {
 		return data.display_name;
 
 	} catch (error) {
+
 		console.error("[Reverse Geocoding] Network Error:", error);
 		emit("errorOccurred", "❌ Network error. Please check your connection.");
 		return "Unavailable";
+
+	} finally {
+		isLoadingLocation.value = false; // Stop loading after request
 	}
 	
 }
@@ -128,10 +134,13 @@ async function handleGeolocationSuccess(position) {
 	const lat = position.coords.latitude;
 	const lon = position.coords.longitude;
 
-	console.log("[GPS Coordinates]:", lat, lon);
+	// console.log("[GPS Coordinates]:", lat, lon);
 
-	// Update the ref with new coordinates
-	userCoordinates.value = { lat, lon };
+	// Ensure loaders only stop when BOTH lat/lon are valid
+	if (lat && lon) {
+  	isLoadingCoordinates.value = false;  
+  	userCoordinates.value = { lat, lon };
+  }
 
 	// Recenter map if necessary
 	if (shouldRecenterMap(lat, lon)) {
@@ -170,6 +179,20 @@ async function handleGeolocationSuccess(position) {
 
 }
 
+// Check if an OSM API call is necessary (reduces API calls)
+function shouldUpdateLocation(newLat, newLon) {
+
+	// If it's the first time, always fetch OSM coordinates
+	if (!lastOSMCoords) return true;
+
+	// Destructuring latitude and longitude from lastOSMCoords
+	const { lat, lon } = lastOSMCoords;
+
+	// If the user has moved far enough, return true
+	return getDistance(lat, lon, newLat, newLon) > DISTANCE_THRESHOLD;
+
+}
+
 // Handle Geolocation Errors through alerts
 function handleGeolocationError(error) {
 
@@ -198,6 +221,8 @@ function handleGeolocationError(error) {
 }
 
 onMounted(() => {
+
+	isLoadingCoordinates.value = true; // Ensure loader is active on start
 
 	// Wait for Vue to finish rendering
 	nextTick(() => {

@@ -1,6 +1,7 @@
 <!-- PURPOSE: Shows temperature, cloud cover, and visibility. -->
 <template>
 	<div>
-		<span>Weather</span>
+		<div class="font-bold">Weather</div>
+		<div>🚧</div>
 	</div>
 </template>

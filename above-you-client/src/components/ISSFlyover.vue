@@ -1,15 +1,58 @@
 <!-- PURPOSE: Shows ISS pass-over times. -->
 <template>
 
-	<div>ISS</div>
-	<div>Location: {{ issCoordinates.lat }}, {{ issCoordinates.lon }}</div>
-	<div>🛰️ -- 👤: {{ distanceToISS }}</div>
+	<div class="flex flex-col items-center text-center">
+
+		<!-- Title -->
+		<div class="flex items-center gap-2">
+			<img class="image-sm" src="../assets/iss.png" alt="ISS Icon">
+			<span class="font-bold">International Space Station</span>
+		</div>
+
+		<!-- ISS Location -->
+		<div class="mt-2">
+
+			<span class="flex gap-5">
+
+				<div class="flex flex-col items-center">
+					<span class="font-bold">Lat</span>
+
+					<span v-if="isLoadingISS" class="loader"></span>
+					<span v-else>{{ issCoordinates.lat }}</span>
+					
+				</div>
+
+				<div class="flex flex-col items-center">
+
+					<span class="font-bold">Lon</span>
+
+					<span v-if="isLoadingISS" class="loader"></span>
+					<span v-else>{{ issCoordinates.lon }}</span>
+
+				</div>
+
+			</span>
+
+		</div>
+
+		<!-- Distance between user and ISS -->
+		<div class="mt-2">
+			<span>🛰️ -- 👤</span>
+			<div>
+				<span v-if="isCalculatingDistance" class="loader"></span>
+				<span v-else>
+					{{ distanceToISS }}
+				</span>
+			</div>
+		</div>
+		
+	</div>
 
 </template>
 
 <script setup>
 
-import { ref, computed, onMounted } from "vue";
+import { ref, watch, onMounted, onUnmounted } from "vue";
 import { getDistance } from "../utils/geolocation.js";
 
 // User coordinates (to be received from MapView.vue)
@@ -26,38 +69,46 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000
 // Fetch interval (default 15 sec)
 const ISS_FETCH_INTERVAL = parseInt(import.meta.env.VITE_ISS_FETCH_INTERVAL || "15000", 10);
 
+// Reactive data
 const issCoordinates = ref({ lat: null, lon: null }); // Stores ISS coordinates
+const distanceToISS = ref("Calculating..."); // Stores user distance to ISS
 
-// Stores the ISS distance from the user
-const distanceToISS = computed(() => {
+// Loading states
+const isLoadingISS = ref(true);
+const isCalculatingDistance = ref(true);
 
-	// Default when data is missing
-	if (!props.userCoordinates?.lat || !props.userCoordinates?.lon || 
-        !issCoordinates.value.lat || !issCoordinates.value.lon) {
-        return "Calculating...";
-    }
+// Immediate trigger for distance calculation
+watch(
+	() => [props.userCoordinates.lat, props.userCoordinates.lon, issCoordinates.value.lat, issCoordinates.value.lon],
+	() => {
+		if (props.userCoordinates.lat && props.userCoordinates.lon && issCoordinates.value.lat && issCoordinates.value.lon) {
 
-    // Ensure coordinates are numbers
-    const userLat = parseFloat(props.userCoordinates.lat);
-    const userLon = parseFloat(props.userCoordinates.lon);
-    const issLat = parseFloat(issCoordinates.value.lat);
-    const issLon = parseFloat(issCoordinates.value.lon);
+			isCalculatingDistance.value = true;
 
-    console.log("[getDistance] Parsed Coordinates:", userLat, userLon, issLat, issLon);
+			// Simulating a delay for smoother transition
+			setTimeout(() => {
+				distanceToISS.value = (getDistance(
+					props.userCoordinates.lat,
+					props.userCoordinates.lon,
+					issCoordinates.value.lat,
+					issCoordinates.value.lon
+				) / 1000).toFixed(2) + " km";
 
-    return (getDistance(
-        props.userCoordinates.lat,
-        props.userCoordinates.lon,
-        issCoordinates.value.lat,
-        issCoordinates.value.lon
-    ) / 1000).toFixed(2) + " km"; // Convert to km & round to 2 decimals
+				isCalculatingDistance.value = false;
+			}, 500);
 
-});
+		}
+	},
+	{ immediate: true } // Runs once on component mount
+);
+
 
 // Fetch ISS coordinates
 async function fetchISSCoordinates() {
 
 	try {
+
+		isLoadingISS.value = true; // Show loader
 
 		const response = await fetch(`${API_BASE_URL}/api/iss-flyover`);
 		const data = await response.json();
@@ -68,7 +119,7 @@ async function fetchISSCoordinates() {
             return;
         }
 
-        console.log("[ISS API] Received Data:", data);
+        // console.log("[ISS API] Received Data:", data);
 
 		// Update ISS position
 		issCoordinates.value = { lat: parseFloat(data.latitude), lon: parseFloat(data.longitude) };
@@ -76,17 +127,24 @@ async function fetchISSCoordinates() {
 	} catch (error) {
 		console.error("[ISS Coordinates Fetching] Network Error:", error);
 		emit("errorOccurred", "❌ Network error. Please check your connection.");
+	} finally {
+		isLoadingISS.value = false; // Hide loader when done
 	}
 
 }
 
-// Fetch ISS data on component mount
+// Fetch ISS data on component mount (wait until userCoordinates is valid before fetching ISS location)
+let intervalId = null;
+
 onMounted(() => {
 
-	fetchISSCoordinates();
+	fetchISSCoordinates(); // Fetch immediately
 
-	// Fetch ISS location every N seconds
-	setInterval(fetchISSCoordinates, ISS_FETCH_INTERVAL);
+	intervalId = setInterval(fetchISSCoordinates, ISS_FETCH_INTERVAL); // Set interval
+
+	onUnmounted(() => {
+		if (intervalId) clearInterval(intervalId); // Cleanup interval when component unmounts
+	});
 
 });
 

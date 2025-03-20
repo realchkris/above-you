@@ -1,6 +1,7 @@
 <!-- PURPOSE: Displays visible celestial bodies. -->
 <template>
 	<div>
-		<span>Celestial Objects</span>
+		<div class="font-bold">Celestial Objects</div>
+		<div>🚧</div>
 	</div>
 </template>

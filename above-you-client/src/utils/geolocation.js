@@ -15,7 +15,7 @@ const toRad = (degrees) => (degrees * Math.PI) / 180;
  */
 export function getDistance(lat1, lon1, lat2, lon2) {
 
-  console.log(`[getDistance] Calculating distance between: (${lat1}, ${lon1}) and (${lat2}, ${lon2})`);
+  // console.log(`[getDistance] Calculating distance between: (${lat1}, ${lon1}) and (${lat2}, ${lon2})`);
 
   if (![lat1, lon1, lat2, lon2].every(Number.isFinite)) {
     console.warn("[getDistance] Invalid coordinates:", lat1, lon1, lat2, lon2);
