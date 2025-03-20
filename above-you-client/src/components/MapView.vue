@@ -73,7 +73,7 @@ const defaultIcon = L.icon({
 	shadowSize: [41, 41]
 });
 
-const userLocation = ref("Locating..."); // User address (+ default text)
+const userLocation = ref(""); // Stores user address
 const userCoordinates = ref({ lat: null, lon: null }); // Used for storing lat and lon real-time
 
 // Loading states
@@ -85,7 +85,7 @@ const CENTER_THRESHOLD = 1000; // Meters before auto-centering the map again
 // Fetch location details via Reverse Geocoding API
 async function fetchReverseGeocode(lat, lon) {
 
-	isLoadingLocation.value = true; // Loader appears before fetching
+	if(userLocation === "") isLoadingLocation.value = true; // Loader appears before fetching only at the beginning
 
 	try {
 

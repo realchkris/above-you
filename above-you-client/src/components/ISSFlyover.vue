@@ -81,23 +81,20 @@ const isCalculatingDistance = ref(true);
 watch(
 	() => [props.userCoordinates.lat, props.userCoordinates.lon, issCoordinates.value.lat, issCoordinates.value.lon],
 	() => {
+		// If user coordinates and ISS coordinates are all present, calculate distance
 		if (props.userCoordinates.lat && props.userCoordinates.lon && issCoordinates.value.lat && issCoordinates.value.lon) {
+			
+			distanceToISS.value = (getDistance(
+				props.userCoordinates.lat,
+				props.userCoordinates.lon,
+				issCoordinates.value.lat,
+				issCoordinates.value.lon
+			) / 1000).toFixed(2) + " km";
 
-			isCalculatingDistance.value = true;
-
-			// Simulating a delay for smoother transition
-			setTimeout(() => {
-				distanceToISS.value = (getDistance(
-					props.userCoordinates.lat,
-					props.userCoordinates.lon,
-					issCoordinates.value.lat,
-					issCoordinates.value.lon
-				) / 1000).toFixed(2) + " km";
-
-				isCalculatingDistance.value = false;
-			}, 500);
+			isCalculatingDistance.value = false;
 
 		}
+
 	},
 	{ immediate: true } // Runs once on component mount
 );
@@ -108,7 +105,8 @@ async function fetchISSCoordinates() {
 
 	try {
 
-		isLoadingISS.value = true; // Show loader
+		// Show loader only at the beginning
+		if (issCoordinates.value.lat === null || issCoordinates.value.lon === null) isLoadingISS.value = true;
 
 		const response = await fetch(`${API_BASE_URL}/api/iss-flyover`);
 		const data = await response.json();
@@ -142,10 +140,11 @@ onMounted(() => {
 
 	intervalId = setInterval(fetchISSCoordinates, ISS_FETCH_INTERVAL); // Set interval
 
-	onUnmounted(() => {
-		if (intervalId) clearInterval(intervalId); // Cleanup interval when component unmounts
-	});
+});
 
+// Clear interval if component is unmounted (prevent API call stacking)
+onUnmounted(() => {
+	if (intervalId) clearInterval(intervalId); // Cleanup interval when component unmounts
 });
 
 </script>
