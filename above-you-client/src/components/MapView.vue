@@ -4,11 +4,13 @@
 	<div
 		class="base-container bg-ay-dark text-white mb-4 min-h-[40px] max-w-80 justify-center"
 	>
-	<span class="font-bold">📍 You</span>
-	<div class="text-ellipsis overflow-hidden whitespace-pre-wrap">
-		<span v-if="isLoadingLocation" class="loader"></span>
-		<span v-else>{{ userLocation }}</span>
-	</div>
+
+		<span class="font-bold">📍 You</span>
+		<div class="text-ellipsis overflow-hidden whitespace-pre-wrap">
+			<span v-if="isLoadingLocation" class="loader"></span>
+			<span v-else>{{ userLocation }}</span>
+		</div>
+
 	</div>
 
 	<!-- Live Latitude & Longitude -->
@@ -82,6 +84,8 @@ const isLoadingCoordinates = ref(true);
 
 const CENTER_THRESHOLD = 1000; // Meters before auto-centering the map again
 
+const lastReverseGeocodeFailed = ref(false); // Bool in case the reverse geocode fetching fails
+
 // Fetch location details via Reverse Geocoding API
 async function fetchReverseGeocode(lat, lon) {
 
@@ -95,7 +99,7 @@ async function fetchReverseGeocode(lat, lon) {
 		if (data.error) {
 			console.warn("[Reverse Geocoding] API Error:", data.error);
 			emit("errorOccurred", "❌ Unable to retrieve location. Try again later.");
-			return "Unavailable";
+			return "❌";
 		}
 
 		console.log("[Updated Location]:", data.display_name);
@@ -107,7 +111,7 @@ async function fetchReverseGeocode(lat, lon) {
 
 		console.error("[Reverse Geocoding] Network Error:", error);
 		emit("errorOccurred", "❌ Network error. Please check your connection.");
-		return "Unavailable";
+		return "❌";
 
 	} finally {
 		isLoadingLocation.value = false; // Stop loading after request
@@ -148,13 +152,18 @@ async function handleGeolocationSuccess(position) {
   }
 
 	// First-time setup: Center map & store initial position
-	if (!lastOSMCoords) {
+	if (!lastOSMCoords || lastReverseGeocodeFailed.value) {
 
 		lastOSMCoords = { lat, lon };
 		map.value.setView([lat, lon], 13);
 		userMarker = L.marker([lat, lon], { icon: defaultIcon }).addTo(map.value);
 
-		userLocation.value = await fetchReverseGeocode(lat, lon); // Initial API call
+		userLocation.value = await fetchReverseGeocode(lat, lon);
+
+		const result = await fetchReverseGeocode(lat, lon); // Initial API call
+		userLocation.value = result;
+		lastReverseGeocodeFailed.value = result === "❌"; // Either assign the Reverse Geocode or "❌"
+
 		return;
 
 	}
