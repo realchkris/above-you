@@ -3,14 +3,22 @@
   <div class="w-full">
 
     <div
-      class="base-container bg-ay-dark text-white flex items-center justify-between cursor-pointer"
+      class="base-container text-white flex items-center justify-between cursor-pointer"
+      :class="bgColor"
       @click="isOpen = !isOpen"
     >
-      <div class="font-bold text-left">{{ title }}</div>
+
+      <!-- Title -->
+      <div class="flex items-center gap-2 mb-2">
+        <img v-if="icon" :src="icon" alt="Icon" class="image-sm" />
+        <div class="font-bold">{{ title }}</div>
+      </div>
+
       <div class="text-sm text-gray-400">
         <span v-if="isOpen">▲</span>
         <span v-else>▼</span>
       </div>
+
     </div>
 
     <transition name="fade">
@@ -28,6 +36,11 @@ import { ref } from "vue";
 
 const props = defineProps({
   title: String,
+  icon: String,
+  bgColor: {
+    type: String,
+    default: "bg-ay-dark",
+  },
   initiallyOpen: {
     type: Boolean,
     default: false,
@@ -36,13 +49,3 @@ const props = defineProps({
 
 const isOpen = ref(props.initiallyOpen);
 </script>
-
-<style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: all 0.2s ease;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-  transform: translateY(-5px);
-}
-</style>

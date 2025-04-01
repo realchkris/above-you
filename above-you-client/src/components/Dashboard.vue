@@ -6,7 +6,10 @@
 		<section class="dashboard-container grid grid-cols-1 gap-4">
 
 			<!-- Weather Card -->
-			<CollapsibleCard title="Weather">
+			<CollapsibleCard
+        title="Weather"
+        :icon="weatherIcon"
+      >
         <div class="base-container bg-ay-dark text-white">
           <WeatherCard
             @errorOccurred="handleError"
@@ -16,7 +19,11 @@
       </CollapsibleCard>
 
 		  <!-- Celestial Objects Card -->
-      <CollapsibleCard title="Celestial Objects 🚧">
+      <CollapsibleCard
+        title="Celestial Objects 🚧"
+        bgColor="bg-ay-purple"
+        :icon="celestialObjectsIcon"
+      >
         <div class="base-container bg-ay-purple text-white">
           <CelestialObjects
             @errorOccurred="handleError"
@@ -26,7 +33,11 @@
       </CollapsibleCard>
 
 		  <!-- ISS Tracker Card -->
-      <CollapsibleCard title="ISS Tracker">
+      <CollapsibleCard
+        title="ISS Tracker"
+        bgColor="bg-ay-green"
+        :icon="ISSIcon"
+      >
         <div class="base-container bg-ay-green text-white">
           <ISSFlyover
             @errorOccurred="handleError"
@@ -55,6 +66,10 @@ import CelestialObjects from './CelestialObjects.vue'
 import ISSFlyover from './ISSFlyover.vue'
 import MapView from './MapView.vue'
 import CollapsibleCard from './CollapsibleCard.vue';
+
+import weatherIcon from '../assets/weather.png';
+import celestialObjectsIcon from '../assets/comet.png';
+import ISSIcon from '../assets/iss.png';
 
 import { ref } from "vue";
 

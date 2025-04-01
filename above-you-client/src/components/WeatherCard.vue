@@ -3,44 +3,49 @@
 
 	<div class="flex flex-col items-center text-center">
 
-		<!-- Title -->
-		<!-- <div class="flex items-center gap-2 mb-2">
+		<transition name="fade" mode="out-in">
 
-			<img class="image-sm" src="../assets/weather.png" alt="Weather Icon" />
-			<div class="font-bold">Weather</div>
+			<!-- Key changes based on state -->
+			<div :key="isLoading ? 'loading' : error ? 'error' : 'data'" class="w-full">
 
-		</div> -->
+				<!-- Loading -->
+				<div v-if="isLoading" class="w-full flex items-center justify-center">
+					<div class="space-y-3 w-3/5">
+						<SkeletonCard />
+						<SkeletonCard />
+						<SkeletonCard />
+					</div>
+				</div>
 
-	    <!-- Loading -->
-		<div v-if="isLoading" class="flex justify-center">
-			<span class="loader"></span>
-		</div>
+			    <!-- Error -->
+				<div v-else-if="error">❌</div>
 
-	    <!-- Error -->
-		<div v-else-if="error">❌</div>
+				<!-- Weather Details -->
+				<div v-else class="base-container bg-ay-lavender space-y-2 text-sm">
 
-		<!-- Weather Details -->
-		<div v-else class="base-container bg-ay-lavender space-y-2 text-sm">
+					<!-- Condition -->
+					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
+						<span class="text-xs">Condition</span>
+						<span>{{ weatherDescription }}</span>
+					</div>
 
-			<!-- Condition -->
-			<div class="base-container bg-ay-dark flex flex-col items-center text-white">
-				<span class="text-xs">Condition</span>
-				<span>{{ weatherDescription }}</span>
+					<!-- Temperature -->
+					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
+						<span class="text-xs">Temperature</span>
+						<span>{{ weather.temperature }}°C</span>
+					</div>
+
+					<!-- Wind -->
+					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
+						<span class="text-xs">Wind</span>
+						<span>{{ weather.windspeed }} km/h @ {{ weather.winddirection }}°</span>
+					</div>
+
+				</div>
+
 			</div>
 
-			<!-- Temperature -->
-			<div class="base-container bg-ay-dark flex flex-col items-center text-white">
-				<span class="text-xs">Temperature</span>
-				<span>{{ weather.temperature }}°C</span>
-			</div>
-
-			<!-- Wind -->
-			<div class="base-container bg-ay-dark flex flex-col items-center text-white">
-				<span class="text-xs">Wind</span>
-				<span>{{ weather.windspeed }} km/h @ {{ weather.winddirection }}°</span>
-			</div>
-
-		</div>
+		</transition>
 
 	</div>
 
@@ -50,6 +55,7 @@
 
 import { ref, watch, computed, onUnmounted } from "vue";
 import { getDistance } from "../utils/geolocation";
+import SkeletonCard from './SkeletonCard.vue'
 
 const props = defineProps({
 	userCoordinates: {

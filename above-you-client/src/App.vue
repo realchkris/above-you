@@ -5,12 +5,14 @@
     <Header />
 
     <!-- Error div -->
-    <div
-      v-if="errorMessage"
-      class="error-container fixed top-4 left-1/2 transform -translate-x-1/2 z-50"
-    >
-      {{ errorMessage }}
-    </div>
+    <transition name="fade">
+      <div
+        v-if="errorMessage"
+        class="error-container fixed top-4 left-1/2 transform -translate-x-1/2 z-50"
+      >
+        {{ errorMessage }}
+      </div>
+    </transition>
 
     <main class="w-full flex justify-center pt-[58px]">
 

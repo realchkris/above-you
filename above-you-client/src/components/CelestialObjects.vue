@@ -3,50 +3,56 @@
 
 	<div class="flex flex-col items-center text-center">
 
-		<!-- Title -->
-		<!-- <div class="flex items-center gap-2 mb-2">
-			<img class="image-sm" src="../assets/comet.png" alt="Comet Icon" />
-			<div class="font-bold">Celestial Objects</div>
-		</div> -->
+		<transition name="fade" mode="out-in">
 
-		<div v-if="isLoading" class="flex justify-center">
-			<span class="loader"></span>
-		</div>
+			<!-- Key changes based on state -->
+			<div :key="isLoading ? 'loading' : error ? 'error' : 'data'" class="w-full flex items-center justify-center">
 
-		<div v-else-if="error">❌</div>
+				<!-- Loading -->
+				<div v-if="isLoading" class="space-y-3 w-3/5">
+					<SkeletonCard />
+				</div>
 
-		<ul v-else class="space-y-2">
+				<!-- Error -->
+				<div v-else-if="error">❌</div>
 
-			<li
-				v-for="(object, index) in celestialObjects"
-				:key="index"
-				class="base-container bg-ay-purple-light"
-			>
+				<!-- List -->
+				<ul v-else class="space-y-2">
 
-				<!-- Celestial object name -->
-				<div class="font-semibold mb-2">{{ object.name }}</div>
-				
-				<!-- Celestial object details -->
-			    <div class="flex gap-3 justify-center">
+					<li
+						v-for="(object, index) in celestialObjects"
+						:key="index"
+						class="base-container bg-ay-purple-light"
+					>
 
-					<div class="base-container bg-ay-purple flex flex-col items-center">
-						<span class="text-xs">Alt</span>
-						<span>{{ object.altitude.toFixed(1) }}°</span>
-					</div>
-					<div class="base-container bg-ay-purple flex flex-col items-center">
-						<span class="text-xs">Az</span>
-						<span>{{ object.azimuth.toFixed(1) }}°</span>
-					</div>
-					<div class="base-container bg-ay-purple flex flex-col items-center">
-						<span class="text-xs">Mag</span>
-						<span>{{ object.magnitude }}</span>
-					</div>
+						<!-- Celestial object name -->
+						<div class="font-semibold mb-2">{{ object.name }}</div>
+						
+						<!-- Celestial object details -->
+					    <div class="flex gap-3 justify-center">
 
-			    </div>
+							<div class="base-container bg-ay-purple flex flex-col items-center">
+								<span class="text-xs">Alt</span>
+								<span>{{ object.altitude.toFixed(1) }}°</span>
+							</div>
+							<div class="base-container bg-ay-purple flex flex-col items-center">
+								<span class="text-xs">Az</span>
+								<span>{{ object.azimuth.toFixed(1) }}°</span>
+							</div>
+							<div class="base-container bg-ay-purple flex flex-col items-center">
+								<span class="text-xs">Mag</span>
+								<span>{{ object.magnitude }}</span>
+							</div>
 
-		    </li>
+					    </div>
 
-		</ul>
+				    </li>
+
+				</ul>
+
+			</div>
+
+		</transition>
 
 		<p v-if="!isLoading && celestialObjects.length === 0 && !error" class="text-sm text-gray-400">
 		  No visible celestial objects right now
@@ -60,6 +66,7 @@
 
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import { getDistance } from "../utils/geolocation";
+import SkeletonCard from './SkeletonCard.vue'
 
 const props = defineProps({
 	userCoordinates: {
