@@ -14,6 +14,7 @@
 		    <!-- Celestial Objects Card -->
 		    <div class="base-container bg-ay-purple text-white">
 		    	<CelestialObjects
+		    		@errorOccurred="handleError"
 		    		:userCoordinates="userCoordinates"
 		    	/>
 		    </div>
@@ -21,6 +22,7 @@
 		    <!-- ISS Tracker Card -->
 		    <div class="base-container bg-ay-green text-white">
 		    	<ISSFlyover
+		    		@errorOccurred="handleError"
 		    		:userCoordinates="userCoordinates"
 		    	/>
 		    </div>

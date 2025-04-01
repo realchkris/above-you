@@ -16,7 +16,7 @@ Minimal frontend offering an intuitive and responsive user experience.
 - [🚧] **Refined Error Handling** – Centralized alerts instead of browser popups
 - [🚧] **Improved UX/UI** – Better animations, loading indicators
 - [   ] **Local Storage Caching** - User location & other data gets saved in localStorage to avoid unnecessary API calls
-- [   ] **Weather & Celestial Data** – Integration with external APIs
+- [🚧] **Weather & Celestial Data** – Integration with external APIs
 
 ## 🔜 Upcoming features
 - [   ] **Dark Mode Support**

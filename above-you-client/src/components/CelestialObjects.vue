@@ -4,7 +4,7 @@
 	<div class="flex flex-col items-center text-center">
 
 		<!-- Title -->
-		<div class="flex items-center gap-2">
+		<div class="flex items-center gap-2 mb-2">
 			<img class="image-sm" src="../assets/comet.png" alt="Comet Icon" />
 			<div class="font-bold">Celestial Objects</div>
 		</div>
@@ -13,29 +13,43 @@
 			<span class="loader"></span>
 		</div>
 
-		<div v-else-if="error">{{ error }}</div>
+		<div v-else-if="error">❌</div>
 
 		<ul v-else class="space-y-2">
 
 			<li
 				v-for="(object, index) in celestialObjects"
 				:key="index"
-				class="bg-ay-dark-lighter p-2 rounded"
+				class="base-container bg-ay-purple-light"
 			>
 
-				<div class="font-semibold">{{ object.name }}</div>
-				<div class="text-sm">
-					Alt: {{ object.altitude.toFixed(1) }}°,
-					Az: {{ object.azimuth.toFixed(1) }}°,
-					Mag: {{ object.magnitude }}
+				<!-- Celestial object name -->
+				<div class="font-semibold mb-2">{{ object.name }}</div>
+				
+				<!-- Celestial object details -->
+			    <div class="flex gap-3 justify-center">
+
+					<div class="base-container bg-ay-purple flex flex-col items-center">
+						<span class="text-xs">Alt</span>
+						<span>{{ object.altitude.toFixed(1) }}°</span>
+					</div>
+					<div class="base-container bg-ay-purple flex flex-col items-center">
+						<span class="text-xs">Az</span>
+						<span>{{ object.azimuth.toFixed(1) }}°</span>
+					</div>
+					<div class="base-container bg-ay-purple flex flex-col items-center">
+						<span class="text-xs">Mag</span>
+						<span>{{ object.magnitude }}</span>
+					</div>
+
 			    </div>
 
 		    </li>
 
 		</ul>
 
-		<p v-if="!isLoading && celestialObjects.length === 0" class="text-sm text-gray-400">
-		  No visible celestial objects right now.
+		<p v-if="!isLoading && celestialObjects.length === 0 && !error" class="text-sm text-gray-400">
+		  No visible celestial objects right now
 		</p>
 		
 	</div>
@@ -45,6 +59,7 @@
 <script setup>
 
 import { ref, watch, onMounted, onUnmounted } from "vue";
+import { getDistance } from "../utils/geolocation";
 
 const props = defineProps({
 	userCoordinates: {
@@ -57,6 +72,10 @@ const emit = defineEmits(["errorOccurred"]);
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const CELESTIAL_FETCH_INTERVAL = parseInt(import.meta.env.VITE_CELESTIAL_FETCH_INTERVAL || "60000", 10);
+const GEOLOCATION_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOLD || "100", 10);
+
+let lastCoords = null;
+let lastFetchTime = 0;
 
 const celestialObjects = ref([]);
 const isLoading = ref(true);
@@ -88,7 +107,7 @@ async function fetchCelestialData() {
 	} catch (err) {
 
 		console.error("[CelestialObjects] Error:", err);
-		error.value = "❌";
+		error.value = "❌ Failed to fetch celestial data.";
 		emit("errorOccurred", error.value);
 
 	} finally {
@@ -104,10 +123,27 @@ watch(
 
 		console.log("[Watcher Triggered] Coords:", coords); // Debug
 
-		if (!coords || !coords.lat || !coords.lon || intervalId) return;
+		if (!coords || !coords.lat || !coords.lon) return;
+
+		const now = Date.now();
+
+		const shouldSkip =
+			lastCoords &&
+			getDistance(lastCoords.lat, lastCoords.lon, coords.lat, coords.lon) < GEOLOCATION_THRESHOLD &&
+				(now - lastFetchTime) < CELESTIAL_FETCH_INTERVAL;
+
+		if (shouldSkip) {
+			console.log("Skipping fetch: location & time thresholds not met");
+			return;
+		}
+
+		lastCoords = { ...coords };
+		lastFetchTime = now;
 
 		fetchCelestialData();
-	    intervalId = setInterval(fetchCelestialData, CELESTIAL_FETCH_INTERVAL);
+	    if (!intervalId) {
+	    	intervalId = setInterval(fetchCelestialData, CELESTIAL_FETCH_INTERVAL);
+	    }
 
 	},
 	{ immediate: true }

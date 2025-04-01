@@ -9,6 +9,10 @@
   background-color: theme('colors.ayPurple');
 }
 
+.bg-ay-purple-light {
+  background-color: theme('colors.ayPurpleLight');
+}
+
 .bg-ay-dark {
   background-color: theme('colors.ayDark');
 }

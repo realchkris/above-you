@@ -8,7 +8,7 @@ A work-in-progress web application that provides real-time information on **cele
 Core Features (MVP):
 - Detect user location using the Geolocation API.
 - Fetch and display real-time weather and sky visibility data using Open-Meteo API.
-- Retrieve and display visible celestial objects from NASA Sky API.
+- Retrieve and display visible celestial objects from AstronomyAPI.
 - Show ISS flyover times based on location using WhereTheISS.at API.
 
 
