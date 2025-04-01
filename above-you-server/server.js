@@ -1,4 +1,4 @@
-// Load .env variables first
+// Load environment variables from .env file
 require("dotenv").config();
 
 // Base dependencies
@@ -6,96 +6,72 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 
-// Environment variables (+ fallback)
-const PORT = process.env.PORT || 5000;
-const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*"; // Default to "*" if not set
-
-const corsOptions = {
-    origin: ALLOWED_ORIGIN,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    allowedHeaders: "Content-Type,Authorization"
-};
-
-// Initializing app
+// Express app setup
 const app = express();
 
-// Initializing CORS
-app.use(cors(corsOptions));
+// Load .env values or use fallback
+const PORT = process.env.PORT || 5000;
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 
-// Middleware to log requests
+// Configure CORS (who can access the API)
+app.use(cors({
+  origin: ALLOWED_ORIGIN,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: "Content-Type,Authorization",
+}));
+
+// Log every request to the console
 app.use((req, res, next) => {
-    console.log(`Request received: ${req.method} ${req.originalUrl}`);
-    next(); // Pass control to the next middleware or route handler
+  console.log(`Request received: ${req.method} ${req.originalUrl}`);
+  next();
 });
 
-// Proxy makes a Reverse Geocoding Request to OpenStreetMap (OSM)
-// Reverse Geocoding: Converts latitude/longitude into a human-readable address (city, street, country).
-// We already have latitude and longitude from the browser, but we call OSM to:
-// - Get city/street information for user experience (UX)
-// - Ensure we display a properly formatted location name
+// Reverse Geocoding (OpenStreetMap - Nominatim)
 app.get("/api/reverse-geocode", async (req, res) => {
-
-	try {
-
-		const { lat, lon } = req.query;
-		if (!lat || !lon) return res.status(400).json({ error: "Missing coordinates" });
-
-		const response = await axios.get(`https://nominatim.openstreetmap.org/reverse`, {
-			params: {
-				lat,
-				lon,
-				format: "json"
-			}
-		});
-
-		res.json(response.data);
-
-	} catch (error) {
-		console.error("Error fetching geolocation data:", error);
-		res.status(500).json({ error: "Internal Server Error" });
-	}
-
-});
-
-// Fetch ISS Current Location from Where The ISS Is
-app.get("/api/iss-flyover", async (req, res) => {
-
-	try {
-
-		const response = await axios.get("http://api.open-notify.org/iss-now.json");
-		const { latitude, longitude } = response.data.iss_position;
-
-		res.json({ latitude, longitude });
-
-	} catch (error) {
-		console.error("Error fetching ISS location:", error);
-		res.status(500).json({ error: "Failed to retrieve ISS location" });
-	}
-
-});
-
-// Proxy makes a Celestial objects request to AstronomyAPI
-app.get("/api/celestial", async (req, res) => {
+  const { lat, lon } = req.query;
+  if (!lat || !lon) return res.status(400).json({ error: "Missing coordinates" });
 
   try {
+    const response = await axios.get("https://nominatim.openstreetmap.org/reverse", {
+      params: { lat, lon, format: "json" }
+    });
+    res.json(response.data);
+  } catch (err) {
+    console.error("[Reverse Geocoding Error]", err.message || err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
-    const { lat, lon } = req.query;
+// ISS Current Location (Open Notify API)
+app.get("/api/iss-flyover", async (req, res) => {
+  try {
+    const response = await axios.get("http://api.open-notify.org/iss-now.json");
+    const { latitude, longitude } = response.data.iss_position;
+    res.json({ latitude, longitude });
+  } catch (err) {
+    console.error("[ISS API Error]", err.message || err);
+    res.status(500).json({ error: "Failed to retrieve ISS location" });
+  }
+});
 
-    if (!lat || !lon) {
-      return res.status(400).json({ error: "Missing coordinates" });
-    }
+// Celestial Objects (AstronomyAPI.com)
+/*
+app.get("/api/celestial", async (req, res) => {
+  const { lat, lon } = req.query;
+  if (!lat || !lon) return res.status(400).json({ error: "Missing coordinates" });
 
-    const apiKey = process.env.ASTRONOMY_API_KEY;
-    const appId = process.env.ASTRONOMY_APP_ID; // If needed for this API
+  const apiKey = process.env.ASTRONOMY_API_KEY;
+  const appId = process.env.ASTRONOMY_APP_ID;
 
-    if (!apiKey || !appId) {
-      return res.status(500).json({ error: "Missing AstronomyAPI credentials." });
-    }
+  if (!apiKey || !appId) {
+    return res.status(500).json({ error: "Missing AstronomyAPI credentials." });
+  }
 
+  try {
     const now = new Date();
     const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     const date = local.toISOString().split("T")[0];
-    const time = local.toISOString().split("T")[1].split(".")[0]; // "HH:MM:SS"
+    const time = local.toISOString().split("T")[1].split(".")[0];
 
     const response = await axios.get("https://api.astronomyapi.com/api/v2/bodies/positions", {
       params: {
@@ -104,7 +80,7 @@ app.get("/api/celestial", async (req, res) => {
         elevation: 0,
         from_date: date,
         to_date: date,
-        time: time
+        time
       },
       headers: {
         Authorization: `Basic ${Buffer.from(`${appId}:${apiKey}`).toString("base64")}`
@@ -116,12 +92,12 @@ app.get("/api/celestial", async (req, res) => {
     const visibleObjects = [];
     const filteredOut = [];
 
+    // Loop through all objects and separate visible vs filtered
     bodies.forEach(row => {
-
-      const cell = row.cells?.[0]; // grab the actual data cell
+      const cell = row.cells?.[0];
       const position = cell?.position?.horizontal;
 
-      if (position && position.altitude.degrees > 0) {
+      if (position && parseFloat(position.altitude.degrees) > 0) {
         visibleObjects.push({
           name: row.entry.name,
           altitude: parseFloat(position.altitude.degrees),
@@ -136,7 +112,6 @@ app.get("/api/celestial", async (req, res) => {
             : `Below horizon (alt: ${position.altitude.degrees})`
         });
       }
-
     });
 
     console.log("Filtered out objects:", filteredOut);
@@ -146,15 +121,47 @@ app.get("/api/celestial", async (req, res) => {
       filteredOut
     });
 
-    // console.log("RAW RESPONSE:", JSON.stringify(response.data, null, 2));
-
   } catch (err) {
     console.error("[Celestial API Error]", err.response?.data || err.message);
     res.status(500).json({ error: "Failed to fetch celestial data" });
   }
+});
+*/
 
+// Current Weather (Open-Meteo)
+app.get("/api/weather", async (req, res) => {
+  const { lat, lon } = req.query;
+  if (!lat || !lon) return res.status(400).json({ error: "Missing coordinates" });
+
+  try {
+    const response = await axios.get("https://api.open-meteo.com/v1/forecast", {
+      params: {
+        latitude: lat,
+        longitude: lon,
+        current_weather: true
+      }
+    });
+
+    const weather = response.data.current_weather;
+
+    if (!weather) {
+      return res.status(500).json({ error: "Weather data not available" });
+    }
+
+    res.json({
+      temperature: weather.temperature,
+      windspeed: weather.windspeed,
+      winddirection: weather.winddirection,
+      weathercode: weather.weathercode,
+      time: weather.time
+    });
+  } catch (err) {
+    console.error("[Weather API Error]", err.message || err);
+    res.status(500).json({ error: "Failed to fetch weather data" });
+  }
 });
 
-
-// Start the server
-app.listen(PORT, () => console.log(`Proxy server running on port ${PORT}`));
+// Start Server
+app.listen(PORT, () => {
+  console.log(`🚀 Proxy server running on port ${PORT}`);
+});

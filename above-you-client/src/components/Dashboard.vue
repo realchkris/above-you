@@ -1,5 +1,4 @@
 <!-- PURPOSE: Main UI showing weather, celestial data, and ISS flyover times. -->
-
 <template>
 
 	<div class="grid grid-cols-1 gap-4">
@@ -7,25 +6,34 @@
 		<section class="dashboard-container grid grid-cols-1 gap-4">
 
 			<!-- Weather Card -->
-		    <div class="base-container bg-ay-dark text-white">
-		    	<WeatherCard />
-		    </div>
+			<CollapsibleCard title="Weather">
+        <div class="base-container bg-ay-dark text-white">
+          <WeatherCard
+            @errorOccurred="handleError"
+            :userCoordinates="userCoordinates"
+          />
+        </div>
+      </CollapsibleCard>
 
-		    <!-- Celestial Objects Card -->
-		    <div class="base-container bg-ay-purple text-white">
-		    	<CelestialObjects
-		    		@errorOccurred="handleError"
-		    		:userCoordinates="userCoordinates"
-		    	/>
-		    </div>
+		  <!-- Celestial Objects Card -->
+      <CollapsibleCard title="Celestial Objects 🚧">
+        <div class="base-container bg-ay-purple text-white">
+          <CelestialObjects
+            @errorOccurred="handleError"
+            :userCoordinates="userCoordinates"
+          />
+        </div>
+      </CollapsibleCard>
 
-		    <!-- ISS Tracker Card -->
-		    <div class="base-container bg-ay-green text-white">
-		    	<ISSFlyover
-		    		@errorOccurred="handleError"
-		    		:userCoordinates="userCoordinates"
-		    	/>
-		    </div>
+		  <!-- ISS Tracker Card -->
+      <CollapsibleCard title="ISS Tracker">
+        <div class="base-container bg-ay-green text-white">
+          <ISSFlyover
+            @errorOccurred="handleError"
+            :userCoordinates="userCoordinates"
+          />
+        </div>
+      </CollapsibleCard>
 
 		</section>
 
@@ -46,6 +54,7 @@ import WeatherCard from './WeatherCard.vue'
 import CelestialObjects from './CelestialObjects.vue'
 import ISSFlyover from './ISSFlyover.vue'
 import MapView from './MapView.vue'
+import CollapsibleCard from './CollapsibleCard.vue';
 
 import { ref } from "vue";
 

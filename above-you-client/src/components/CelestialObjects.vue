@@ -121,7 +121,7 @@ watch(
 	() => props.userCoordinates,
 	(coords) => {
 
-		console.log("[Watcher Triggered] Coords:", coords); // Debug
+		// console.log("[Watcher Triggered] Coords:", coords); // Debug
 
 		if (!coords || !coords.lat || !coords.lon) return;
 
@@ -133,7 +133,7 @@ watch(
 				(now - lastFetchTime) < CELESTIAL_FETCH_INTERVAL;
 
 		if (shouldSkip) {
-			console.log("Skipping fetch: location & time thresholds not met");
+			console.log("Skipping celestial fetch: location & time thresholds not met");
 			return;
 		}
 
