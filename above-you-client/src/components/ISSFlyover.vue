@@ -1,4 +1,6 @@
+<!-- PURPOSE: Shows the International Space Station (ISS) location and calculates the ISS - user distance in real time. -->
 <template>
+
 	<div class="flex flex-col items-center text-center">
 
 		<!-- Title -->
@@ -68,7 +70,7 @@ const distanceError = ref(false);
 
 const hasCalculatedDistance = ref(false);
 
-// Distance watcher
+// Distance watcher (Auto calculate distance when values change)
 watch(
 	() => [
 		props.userCoordinates.lat,
@@ -101,7 +103,7 @@ watch(
 
 		} else {
 
-			// Delay before showing ❌ if values still missing
+			// Delay before showing error if values still missing
 			setTimeout(() => {
 				const stillInvalid =
 					!(props.userCoordinates.lat && props.userCoordinates.lon &&
@@ -120,6 +122,7 @@ watch(
 
 // Fetch ISS Coordinates
 async function fetchISSCoordinates() {
+
 	// Show loader ONLY if this is the first fetch
 	if (!hasFetchedISS.value) {
 		isLoadingISS.value = true;
@@ -150,6 +153,7 @@ async function fetchISSCoordinates() {
 	} finally {
 		isLoadingISS.value = false;
 	}
+	
 }
 
 // Polling

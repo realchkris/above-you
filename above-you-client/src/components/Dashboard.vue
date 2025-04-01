@@ -13,7 +13,9 @@
 
 		    <!-- Celestial Objects Card -->
 		    <div class="base-container bg-ay-purple text-white">
-		    	<CelestialObjects />
+		    	<CelestialObjects
+		    		:userCoordinates="userCoordinates"
+		    	/>
 		    </div>
 
 		    <!-- ISS Tracker Card -->

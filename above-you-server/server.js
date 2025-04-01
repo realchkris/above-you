@@ -1,3 +1,6 @@
+// Load .env variables first
+require("dotenv").config();
+
 // Base dependencies
 const express = require("express");
 const cors = require("cors");
@@ -70,6 +73,88 @@ app.get("/api/iss-flyover", async (req, res) => {
 	}
 
 });
+
+// Proxy makes a Celestial objects request to AstronomyAPI
+app.get("/api/celestial", async (req, res) => {
+
+  try {
+
+    const { lat, lon } = req.query;
+
+    if (!lat || !lon) {
+      return res.status(400).json({ error: "Missing coordinates" });
+    }
+
+    const apiKey = process.env.ASTRONOMY_API_KEY;
+    const appId = process.env.ASTRONOMY_APP_ID; // If needed for this API
+
+    if (!apiKey || !appId) {
+      return res.status(500).json({ error: "Missing AstronomyAPI credentials." });
+    }
+
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    const date = local.toISOString().split("T")[0];
+    const time = local.toISOString().split("T")[1].split(".")[0]; // "HH:MM:SS"
+
+    const response = await axios.get("https://api.astronomyapi.com/api/v2/bodies/positions", {
+      params: {
+        latitude: lat,
+        longitude: lon,
+        elevation: 0,
+        from_date: date,
+        to_date: date,
+        time: time
+      },
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${appId}:${apiKey}`).toString("base64")}`
+      }
+    });
+
+    const bodies = response.data.data.table.rows;
+
+    const visibleObjects = [];
+    const filteredOut = [];
+
+    bodies.forEach(row => {
+
+      const cell = row.cells?.[0]; // grab the actual data cell
+      const position = cell?.position?.horizontal;
+
+      if (position && position.altitude.degrees > 0) {
+        visibleObjects.push({
+          name: row.entry.name,
+          altitude: parseFloat(position.altitude.degrees),
+          azimuth: parseFloat(position.azimuth.degrees),
+          magnitude: cell.extraInfo?.magnitude ?? "N/A"
+        });
+      } else {
+        filteredOut.push({
+          name: row.entry.name,
+          reason: !position
+            ? "No horizontal position"
+            : `Below horizon (alt: ${position.altitude.degrees})`
+        });
+      }
+
+    });
+
+    console.log("Filtered out objects:", filteredOut);
+
+    res.json({
+      visible: visibleObjects,
+      filteredOut
+    });
+
+    // console.log("RAW RESPONSE:", JSON.stringify(response.data, null, 2));
+
+  } catch (err) {
+    console.error("[Celestial API Error]", err.response?.data || err.message);
+    res.status(500).json({ error: "Failed to fetch celestial data" });
+  }
+
+});
+
 
 // Start the server
 app.listen(PORT, () => console.log(`Proxy server running on port ${PORT}`));
