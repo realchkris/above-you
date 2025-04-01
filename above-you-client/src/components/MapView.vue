@@ -1,37 +1,84 @@
 <!-- PURPOSE: Shows the map and the user's real-time position. -->
 <template>
 
-	<div
-		class="base-container bg-ay-dark text-white mb-4 min-h-[40px] max-w-80 justify-center"
-	>
+	<!-- Reverse Geocoded User Location -->
+	<transition name="fade" mode="out-in">
+		<div
+			:key="isLoadingLocation ? 'loading' : locationError ? 'error' : 'data'"
+			class="base-container bg-ay-dark text-white mb-4 min-h-[40px] max-w-80 flex justify-center items-center"
+		>
+			<!-- Skeleton Loader -->
+			<template v-if="isLoadingLocation">
+				<SkeletonCard class="h-6 w-3/5" />
+			</template>
 
-		<span class="font-bold">📍 You</span>
-		<div class="text-ellipsis overflow-hidden whitespace-pre-wrap">
-			<span v-if="isLoadingLocation" class="loader"></span>
-			<span v-else>{{ userLocation }}</span>
+			<!-- Error -->
+			<template v-else-if="locationError">
+				<span>❌</span>
+			</template>
+
+			<!-- Data -->
+			<template v-else>
+				<div class="text-sm text-center break-words whitespace-pre-wrap">
+					<span class="text-xs">Your location</span><br />
+					<span>{{ userLocation }}</span>
+				</div>
+			</template>
+
 		</div>
+	</transition>
 
-	</div>
+	<!-- Live Coordinates -->
+	<transition name="fade" mode="out-in">
+		<div
+			:key="isLoadingCoordinates ? 'loading' : coordinatesError ? 'error' : 'data'"
+			class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4"
+		>
 
-	<!-- Live Latitude & Longitude -->
-	<div class="flex gap-4 text-white bg-ay-dark p-2 rounded-md mb-4 justify-center">
+			<!-- Skeleton Loader -->
+			<template v-if="isLoadingCoordinates">
+				<SkeletonCard class="h-12 w-16" />
+				<SkeletonCard class="h-12 w-16" />
+			</template>
 
-		<div class="flex flex-col items-center">
-			<span class="font-bold">Lat</span>
-			<span v-if="isLoadingCoordinates" class="loader"></span>
-			<span v-else>{{ userCoordinates.lat }}</span>
+			<!-- Error -->
+			<template v-else-if="coordinatesError">
+				<span class="text-xl">❌</span>
+			</template>
+
+			<!-- Data -->
+			<template v-else>
+				<div class="flex gap-4">
+
+					<!-- Latitude -->
+					<div class="base-container bg-ay-lavender flex flex-col items-center">
+						<span class="text-xs">Lat</span>
+						<span>{{ userCoordinates.lat }}</span>
+					</div>
+
+					<!-- Longitude -->
+					<div class="base-container bg-ay-lavender flex flex-col items-center">
+						<span class="text-xs">Lon</span>
+						<span>{{ userCoordinates.lon }}</span>
+					</div>
+
+				</div>
+			</template>
+
 		</div>
+	</transition>
 
-		<div class="flex flex-col items-center">
-			<span class="font-bold">Lon</span>
-			<span v-if="isLoadingCoordinates" class="loader"></span>
-			<span v-else>{{ userCoordinates.lon }}</span>
-		</div>
+	<!-- Map -->
+	<div class="map-container relative">
+		<transition name="fade" mode="out-in">
+			<SkeletonCard
+				v-if="isMapLoading"
+				class="absolute top-0 left-0 w-full h-full z-10 rounded"
+			/>
+		</transition>
 
-	</div>
-
-	<div class="map-container">
-		<div id="map"></div>
+		<!-- Always rendered to prevent init issues -->
+		<div id="map" class="z-0" />
 	</div>
 
 </template>
@@ -43,250 +90,202 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 import { getDistance } from "../utils/geolocation.js";
+import SkeletonCard from './SkeletonCard.vue';
 
-// Emits to notify parent component
+// Emits
 const emit = defineEmits(["errorOccurred", "userLocationUpdated"]);
 
-const map = ref(null); // Variable used for the map
+// Refs
+const map = ref(null);
+const userCoordinates = ref({ lat: null, lon: null });
+const userLocation = ref("");
 
-let userMarker = null; // Stores the current user position marker
-let lastOSMCoords = null; // Stores last OSM API call position
+const isMapLoading = ref(true);
+const isLoadingLocation = ref(true);
+const isLoadingCoordinates = ref(true);
 
-// Environmental variables (+ fallback results)
+// State (non-reactive)
+let userMarker = null;
+let lastOSMCoords = null;
+let lastReverseGeocodeFailed = false;
 
-// Server URL (or localhost)
+// Constants
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const GEO_TIMEOUT = parseInt(import.meta.env.VITE_GEOLOCATION_TIMEOUT || "15000", 10);
+const MAXIMUM_AGE = parseInt(import.meta.env.VITE_GEOLOCATION_MAXIMUM_AGE || "30000", 10);
+const DISTANCE_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOLD || "100", 10);
+const RECENTER_THRESHOLD = 1000; // in meters
 
-// Default values for Geolocation settings
-const GEO_TIMEOUT = parseInt(import.meta.env.VITE_GEOLOCATION_TIMEOUT || "15000", 10); // Default to 15 sec if env is missing
-const MAXIMUM_AGE = parseInt(import.meta.env.VITE_GEOLOCATION_MAXIMUM_AGE || "30000", 10); // Default to 30 sec old data if env is missing
-const DISTANCE_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOLD || "100", 10); // Distance Threshold (meters)
-
-// Fix Leaflet missing icons issue
+// Fix Leaflet icons
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 const defaultIcon = L.icon({
 	iconUrl: markerIcon,
 	shadowUrl: markerShadow,
-	iconSize: [25, 41], // Default size
-	iconAnchor: [12, 41], // Adjust anchor
+	iconSize: [25, 41],
+	iconAnchor: [12, 41],
 	popupAnchor: [1, -34],
-	shadowSize: [41, 41]
+	shadowSize: [41, 41],
 });
 
-const userLocation = ref(""); // Stores user address
-const userCoordinates = ref({ lat: null, lon: null }); // Used for storing lat and lon real-time
-
-// Loading states
-const isLoadingLocation = ref(true);
-const isLoadingCoordinates = ref(true);
-
-const CENTER_THRESHOLD = 1000; // Meters before auto-centering the map again
-
-const lastReverseGeocodeFailed = ref(false); // Bool in case the reverse geocode fetching fails
-
-// Fetch location details via Reverse Geocoding API
+// Reverse Geocoding
 async function fetchReverseGeocode(lat, lon) {
 
-	if(userLocation === "") isLoadingLocation.value = true; // Loader appears before fetching only at the beginning
+	if (!userLocation.value) isLoadingLocation.value = true;
 
 	try {
+		const res = await fetch(`${API_BASE_URL}/api/reverse-geocode?lat=${lat}&lon=${lon}`);
+		const data = await res.json();
 
-		const response = await fetch(`${API_BASE_URL}/api/reverse-geocode?lat=${lat}&lon=${lon}`);
-		const data = await response.json();
-
-		if (data.error) {
-			console.warn("[Reverse Geocoding] API Error:", data.error);
-			emit("errorOccurred", "❌ Unable to retrieve location. Try again later.");
-			return "❌";
-		}
-
-		console.log("[Updated Location]:", data.display_name);
+		if (data.error) throw new Error(data.error);
 
 		lastOSMCoords = { lat, lon };
 		return data.display_name;
-
 	} catch (error) {
-
-		console.error("[Reverse Geocoding] Network Error:", error);
-		emit("errorOccurred", "❌ Network error. Please check your connection.");
+		console.warn("[Reverse Geocode]", error);
+		emit("errorOccurred", "❌ Unable to retrieve location.");
+		lastReverseGeocodeFailed = true;
 		return "❌";
-
 	} finally {
-		isLoadingLocation.value = false; // Stop loading after request
+		isLoadingLocation.value = false;
 	}
-	
+
 }
 
-// Initialize the Leaflet map
-function initializeMap() {
+// Map Initialization
+async function initializeMap() {
+
+	await nextTick();
 
 	map.value = L.map("map").setView([51.505, -0.09], 13);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map.value);
 
-	// Fix tile rendering issue
+	L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+		attribution: '&copy; OpenStreetMap contributors',
+	}).addTo(map.value);
+
+	map.value.whenReady(() => {
+		setTimeout(() => {
+			isMapLoading.value = false;
+		}, 300);
+	});
+
 	setTimeout(() => map.value.invalidateSize(), 300);
 
 }
 
-// Handle Geolocation Success
-async function handleGeolocationSuccess(position) {
+// Geolocation
+async function handleGeolocationSuccess(pos) {
 
-	const lat = position.coords.latitude;
-	const lon = position.coords.longitude;
+	const lat = pos.coords.latitude;
+	const lon = pos.coords.longitude;
 
-	// console.log("[GPS Coordinates]:", lat, lon);
+	if (!lat || !lon || !map.value) return;
 
-	// Ensure loaders only stop when BOTH lat/lon are valid
-	if (lat && lon) {
-  	isLoadingCoordinates.value = false;  
-  	userCoordinates.value = { lat, lon };
-  }
+	userCoordinates.value = { lat, lon };
+	isLoadingCoordinates.value = false;
 
-	// Recenter map if necessary
-	if (shouldRecenterMap(lat, lon)) {
-		map.value.setView([lat, lon], 13);
-  }
+	const needsRecenter = shouldRecenterMap(lat, lon);
+	if (needsRecenter) map.value.setView([lat, lon], 13);
 
-	// First-time setup: Center map & store initial position
-	if (!lastOSMCoords || lastReverseGeocodeFailed.value) {
-
-		lastOSMCoords = { lat, lon };
+	const isFirstLoad = !lastOSMCoords || lastReverseGeocodeFailed;
+	if (isFirstLoad) {
 		map.value.setView([lat, lon], 13);
 		userMarker = L.marker([lat, lon], { icon: defaultIcon }).addTo(map.value);
-
-		userLocation.value = await fetchReverseGeocode(lat, lon);
-
-		const result = await fetchReverseGeocode(lat, lon); // Initial API call
-		userLocation.value = result;
-		lastReverseGeocodeFailed.value = result === "❌"; // Either assign the Reverse Geocode or "❌"
-
-		return;
-
 	}
 
-	// If user has moved significantly, update marker position
-	if (shouldUpdateLocation(lat, lon)) {
-
-		map.value.setView([lat, lon], 13); // Center map
-		userLocation.value = await fetchReverseGeocode(lat, lon);
-
+	if (!lastOSMCoords || shouldUpdateLocation(lat, lon)) {
+		const locationName = await fetchReverseGeocode(lat, lon);
+		userLocation.value = locationName;
+		lastReverseGeocodeFailed = locationName === "❌";
 	}
 
-	// Update user marker
 	if (userMarker) {
 		userMarker.setLatLng([lat, lon]);
 	} else {
 		userMarker = L.marker([lat, lon], { icon: defaultIcon }).addTo(map.value);
 	}
 
-	// Emit updated user location to parent (Dashboard)
 	emit("userLocationUpdated", userCoordinates.value);
 
 }
 
-// Check if an OSM API call is necessary (reduces API calls)
-function shouldUpdateLocation(newLat, newLon) {
+function handleGeolocationError(err) {
 
-	// If it's the first time, always fetch OSM coordinates
-	if (!lastOSMCoords) return true;
+	console.error("[Geolocation Error]:", err);
 
-	// Destructuring latitude and longitude from lastOSMCoords
-	const { lat, lon } = lastOSMCoords;
+	const messages = {
+		1: "❌ Location access denied.",
+		2: "⚠️ Location unavailable.",
+		3: "⏳ Request timed out.",
+	};
 
-	// If the user has moved far enough, return true
-	return getDistance(lat, lon, newLat, newLon) > DISTANCE_THRESHOLD;
-
-}
-
-// Handle Geolocation Errors through alerts
-function handleGeolocationError(error) {
-
-	console.error("[Geolocation Error]:", error);
-
-	let errorMessage = "❓ Unknown location error occurred.";
-
-	switch (error.code) {
-
-		case error.PERMISSION_DENIED:
-			errorMessage = "❌ Location access denied. Please enable location permissions.";
-			break;
-		case error.POSITION_UNAVAILABLE:
-			errorMessage = "⚠️ Location unavailable. Try moving to an open area.";
-			break;
-		case error.TIMEOUT:
-			errorMessage = "⏳ Location request timed out. Try again in a better signal area.";
-			break;
-		default:
-			errorMessage = "❓ Unknown location error occurred.";
-
-	}
-
-  emit("errorOccurred", errorMessage); // Emit error to parent
+	emit("errorOccurred", messages[err.code] || "❓ Unknown location error.");
 
 }
 
-onMounted(() => {
+function setupGeolocation() {
 
-	isLoadingCoordinates.value = true; // Ensure loader is active on start
-
-	// Wait for Vue to finish rendering
-	nextTick(() => {
-		if (!map.value) initializeMap();
-	});
-
-	// Actively track user location in real-time
 	navigator.geolocation.watchPosition(
-
 		handleGeolocationSuccess,
 		handleGeolocationError,
 		{ enableHighAccuracy: true, timeout: GEO_TIMEOUT, maximumAge: MAXIMUM_AGE }
-
 	);
 
+}
+
+// Utilities
+function shouldRecenterMap(lat, lon) {
+	if (!map.value) return false;
+
+	const center = map.value.getCenter();
+	return getDistance(center.lat, center.lng, lat, lon) > RECENTER_THRESHOLD;
+}
+
+function shouldUpdateLocation(newLat, newLon) {
+	if (!lastOSMCoords) return true;
+	const { lat, lon } = lastOSMCoords;
+	return getDistance(lat, lon, newLat, newLon) > DISTANCE_THRESHOLD;
+}
+
+// Lifecycle
+onMounted(async () => {
+	isLoadingCoordinates.value = true;
+	await initializeMap();
+	setupGeolocation();
 });
 
-// Improve Map Responsiveness on Window Resize
+// Invalidate map size on resize
 window.addEventListener("resize", () => {
 	if (map.value) setTimeout(() => map.value.invalidateSize(), 300);
 });
-
-function shouldRecenterMap(lat, lon) {
-
-	if (!map.value) return false;
-
-	const currentCenter = map.value.getCenter();
-	const distance = getDistance(currentCenter.lat, currentCenter.lng, lat, lon);
-
-	return distance > CENTER_THRESHOLD; // If user moved > 1km, recenter
-
-}
 
 </script>
 
 <style scoped>
 
+.skeleton-loader {
+	z-index: 10; /* Used to make sure it's above the map */
+}
+
 .map-container {
-  width: 100%;
-  max-width: 100%;
-  height: 300px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  position: relative;
+	width: 100%;
+	max-width: 100%;
+	height: 300px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	position: relative;
 }
 
 #map {
-  width: 100%;
-  height: 100%;
-  min-width: 300px;
-  min-height: 300px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	width: 100%;
+	height: 100%;
+	min-width: 300px;
+	min-height: 300px;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 </style>

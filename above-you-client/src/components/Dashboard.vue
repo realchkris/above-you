@@ -7,44 +7,44 @@
 
 			<!-- Weather Card -->
 			<CollapsibleCard
-        title="Weather"
-        :icon="weatherIcon"
-      >
-        <div class="base-container bg-ay-dark text-white">
-          <WeatherCard
-            @errorOccurred="handleError"
-            :userCoordinates="userCoordinates"
-          />
-        </div>
-      </CollapsibleCard>
+				title="Weather"
+				:icon="weatherIcon"
+			>
+				<div class="base-container bg-ay-dark text-white">
+					<WeatherCard
+						@errorOccurred="handleError"
+						:userCoordinates="userCoordinates"
+					/>
+				</div>
+			</CollapsibleCard>
 
-		  <!-- Celestial Objects Card -->
-      <CollapsibleCard
-        title="Celestial Objects 🚧"
-        bgColor="bg-ay-purple"
-        :icon="celestialObjectsIcon"
-      >
-        <div class="base-container bg-ay-purple text-white">
-          <CelestialObjects
-            @errorOccurred="handleError"
-            :userCoordinates="userCoordinates"
-          />
-        </div>
-      </CollapsibleCard>
+			<!-- Celestial Objects Card -->
+			<CollapsibleCard
+				title="Celestial Objects 🚧"
+				bgColor="bg-ay-purple"
+				:icon="celestialObjectsIcon"
+			>
+				<div class="base-container bg-ay-purple text-white">
+					<CelestialObjects
+						@errorOccurred="handleError"
+						:userCoordinates="userCoordinates"
+					/>
+				</div>
+			</CollapsibleCard>
 
-		  <!-- ISS Tracker Card -->
-      <CollapsibleCard
-        title="ISS Tracker"
-        bgColor="bg-ay-green"
-        :icon="ISSIcon"
-      >
-        <div class="base-container bg-ay-green text-white">
-          <ISSFlyover
-            @errorOccurred="handleError"
-            :userCoordinates="userCoordinates"
-          />
-        </div>
-      </CollapsibleCard>
+			<!-- ISS Tracker Card -->
+			<CollapsibleCard
+				title="ISS Tracker"
+				bgColor="bg-ay-green"
+				:icon="ISSIcon"
+			>
+				<div class="base-container bg-ay-green text-white">
+					<ISSFlyover
+						@errorOccurred="handleError"
+						:userCoordinates="userCoordinates"
+					/>
+				</div>
+			</CollapsibleCard>
 
 		</section>
 
@@ -78,12 +78,12 @@ const userCoordinates = ref({ lat: null, lon: null });
 
 // Pass errors up to parent component
 const handleError = (message) => {
-  emit("errorOccurred", message);
+	emit("errorOccurred", message);
 };
 
 // Function to update user location from MapView.vue
 function updateUserLocation(coords) {
-    userCoordinates.value = coords;
+		userCoordinates.value = coords;
 }
 
 </script>

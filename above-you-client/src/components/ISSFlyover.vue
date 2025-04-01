@@ -4,35 +4,56 @@
 	<div class="flex flex-col items-center text-center">
 
 		<!-- ISS Location -->
-		<div class="mt-2">
-			<span class="flex gap-5">
-				<!-- Latitude -->
-				<div class="flex flex-col items-center">
-					<span class="font-bold">Lat</span>
-					<span v-if="isLoadingISS" class="loader"></span>
-					<span v-else-if="issError">❌</span>
-					<span v-else>{{ issCoordinates.lat }}</span>
+		<transition name="fade" mode="out-in">
+
+			<div
+				:key="isLoadingISS ? 'loading' : issError ? 'error' : 'data'"
+				class="flex flex-col items-center space-y-2"
+			>
+
+				<!-- Loading -->
+				<div v-if="isLoadingISS" class="flex flex-col items-center gap-3">
+					<div class="flex gap-3">
+						<SkeletonCard class="h-16 w-20" />
+						<SkeletonCard class="h-16 w-20" />
+					</div>
+					<SkeletonCard class="h-16 w-20" />
 				</div>
 
-				<!-- Longitude -->
-				<div class="flex flex-col items-center">
-					<span class="font-bold">Lon</span>
-					<span v-if="isLoadingISS" class="loader"></span>
-					<span v-else-if="issError">❌</span>
-					<span v-else>{{ issCoordinates.lon }}</span>
-				</div>
-			</span>
-		</div>
+				<!-- Error -->
+				<div v-else-if="issError">❌</div>
 
-		<!-- Distance -->
-		<div class="mt-2">
-			<span>🛰️ -- 👤</span>
-			<div>
-				<span v-if="isCalculatingDistance" class="loader"></span>
-				<span v-else-if="distanceError">❌</span>
-				<span v-else>{{ distanceToISS }}</span>
+			    <!-- Data -->
+			    <div v-else class="flex flex-col items-center space-y-2">
+
+					<!-- ISS Coordinates -->
+					<div class="flex gap-3 justify-center">
+
+						<div class="base-container bg-ay-teal flex flex-col items-center">
+							<span class="text-xs">Lat</span>
+							<span>{{ issCoordinates.lat }}</span>
+						</div>
+
+						<div class="base-container bg-ay-teal flex flex-col items-center">
+							<span class="text-xs">Lon</span>
+							<span>{{ issCoordinates.lon }}</span>
+						</div>
+
+					</div>
+
+					<!-- Distance -->
+					<div class="base-container bg-ay-teal">
+						<span class="text-xs">🛰️ — 👤</span>
+						<div>
+							<span v-if="isCalculatingDistance" class="loader"></span>
+							<span v-else>{{ distanceToISS }}</span>
+						</div>
+					</div>
+
+				</div>
 			</div>
-		</div>
+
+		</transition>
 
 	</div>
 </template>
@@ -40,6 +61,7 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import { getDistance } from "../utils/geolocation.js";
+import SkeletonCard from './SkeletonCard.vue'
 
 // Props
 const props = defineProps({
