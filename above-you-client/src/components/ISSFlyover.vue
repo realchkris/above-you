@@ -4,10 +4,10 @@
 	<div class="flex flex-col items-center text-center">
 
 		<!-- Title -->
-		<div class="flex items-center gap-2">
+		<!-- <div class="flex items-center gap-2">
 			<img class="image-sm" src="../assets/iss.png" alt="ISS Icon" />
 			<span class="font-bold">International Space Station</span>
-		</div>
+		</div> -->
 
 		<!-- ISS Location -->
 		<div class="mt-2">

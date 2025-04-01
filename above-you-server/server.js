@@ -55,7 +55,6 @@ app.get("/api/iss-flyover", async (req, res) => {
 });
 
 // Celestial Objects (AstronomyAPI.com)
-/*
 app.get("/api/celestial", async (req, res) => {
   const { lat, lon } = req.query;
   if (!lat || !lon) return res.status(400).json({ error: "Missing coordinates" });
@@ -126,7 +125,6 @@ app.get("/api/celestial", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch celestial data" });
   }
 });
-*/
 
 // Current Weather (Open-Meteo)
 app.get("/api/weather", async (req, res) => {

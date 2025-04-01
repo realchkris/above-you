@@ -4,10 +4,10 @@
 	<div class="flex flex-col items-center text-center">
 
 		<!-- Title -->
-		<div class="flex items-center gap-2 mb-2">
+		<!-- <div class="flex items-center gap-2 mb-2">
 			<img class="image-sm" src="../assets/comet.png" alt="Comet Icon" />
 			<div class="font-bold">Celestial Objects</div>
-		</div>
+		</div> -->
 
 		<div v-if="isLoading" class="flex justify-center">
 			<span class="loader"></span>

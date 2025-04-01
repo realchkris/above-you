@@ -4,12 +4,12 @@
 	<div class="flex flex-col items-center text-center">
 
 		<!-- Title -->
-		<div class="flex items-center gap-2 mb-2">
+		<!-- <div class="flex items-center gap-2 mb-2">
 
 			<img class="image-sm" src="../assets/weather.png" alt="Weather Icon" />
 			<div class="font-bold">Weather</div>
 
-		</div>
+		</div> -->
 
 	    <!-- Loading -->
 		<div v-if="isLoading" class="flex justify-center">
