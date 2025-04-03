@@ -13,7 +13,7 @@ It improves **security** and **reduces direct API exposure**.
 - [✔️] **Reverse Geocoding Proxy** – Converts GPS coordinates into readable addresses using OSM  
 - [✔️] **ISS Tracking API** – Fetches real-time ISS location & returns coordinates   
 - [🚧] **CORS Configuration** – Restrict access via environment variables  
-- [   ] **Weather & Celestial API Proxy** – Fetch astronomical & weather data securely
+- [✔️] **Weather & Celestial API Proxy** – Fetch astronomical & weather data securely
 
 ## 🔜 Upcoming Features    
 - [   ] **User Authentication Middleware** – Secure access
