@@ -23,8 +23,8 @@
 				<!-- Error -->
 				<div v-else-if="issError">❌</div>
 
-			    <!-- Data -->
-			    <div v-else class="flex flex-col items-center space-y-2">
+				<!-- Data -->
+				<div v-else class="flex flex-col items-center space-y-2">
 
 					<!-- ISS Coordinates -->
 					<div class="flex gap-3 justify-center">
@@ -59,15 +59,18 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from "vue";
-import { getDistance } from "../utils/geolocation.js";
-import SkeletonCard from './SkeletonCard.vue'
 
-// Props
-const props = defineProps({
-	userCoordinates: Object
-});
+import { ref, watch, onMounted, onUnmounted } from "vue";
+import { storeToRefs } from "pinia";
+import { useUserLocationStore } from "@/stores/userLocationStore";
+import { getDistance } from "../utils/geolocation.js";
+import SkeletonCard from "./SkeletonCard.vue";
+
+// Emits
 const emit = defineEmits(["errorOccurred"]);
+
+// Global store
+const { userCoordinates } = storeToRefs(useUserLocationStore());
 
 // Config
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -86,25 +89,23 @@ const distanceError = ref(false);
 
 const hasCalculatedDistance = ref(false);
 
-// Distance watcher (Auto calculate distance when values change)
+// Distance calculation logic
 watch(
 	() => [
-		props.userCoordinates.lat,
-		props.userCoordinates.lon,
+		userCoordinates.value.lat,
+		userCoordinates.value.lon,
 		issCoordinates.value.lat,
-		issCoordinates.value.lon
+		issCoordinates.value.lon,
 	],
 	() => {
-		const userLat = props.userCoordinates.lat;
-		const userLon = props.userCoordinates.lon;
+		const userLat = userCoordinates.value.lat;
+		const userLon = userCoordinates.value.lon;
 		const issLat = issCoordinates.value.lat;
 		const issLon = issCoordinates.value.lon;
 
 		const allValid = userLat && userLon && issLat && issLon;
 
 		if (allValid) {
-
-			// Only show loader if this is the first time
 			if (!hasCalculatedDistance.value) {
 				isCalculatingDistance.value = true;
 			}
@@ -118,28 +119,23 @@ watch(
 			}, 300);
 
 		} else {
-
-			// Delay before showing error if values still missing
 			setTimeout(() => {
-				const stillInvalid =
-					!(props.userCoordinates.lat && props.userCoordinates.lon &&
-					  issCoordinates.value.lat && issCoordinates.value.lon);
+				const stillInvalid = !(
+					userLat && userLon && issLat && issLon
+				);
 
 				if (stillInvalid && !hasCalculatedDistance.value) {
 					distanceError.value = true;
 					isCalculatingDistance.value = false;
 				}
-			}, 1000); // Delay for smoother UX
-
+			}, 1000);
 		}
 	},
 	{ immediate: true }
 );
 
-// Fetch ISS Coordinates
+// Fetch ISS location
 async function fetchISSCoordinates() {
-
-	// Show loader ONLY if this is the first fetch
 	if (!hasFetchedISS.value) {
 		isLoadingISS.value = true;
 	}
@@ -156,7 +152,7 @@ async function fetchISSCoordinates() {
 
 		issCoordinates.value = {
 			lat: parseFloat(data.latitude),
-			lon: parseFloat(data.longitude)
+			lon: parseFloat(data.longitude),
 		};
 
 		issError.value = false;
@@ -169,7 +165,6 @@ async function fetchISSCoordinates() {
 	} finally {
 		isLoadingISS.value = false;
 	}
-	
 }
 
 // Polling
@@ -183,4 +178,5 @@ onMounted(async () => {
 onUnmounted(() => {
 	if (intervalId) clearInterval(intervalId);
 });
+
 </script>

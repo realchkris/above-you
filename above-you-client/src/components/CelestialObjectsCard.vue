@@ -29,7 +29,7 @@
 						<div class="font-semibold mb-2">{{ object.name }}</div>
 						
 						<!-- Celestial object details -->
-					    <div class="flex gap-3 justify-center">
+						<div class="flex gap-3 justify-center">
 
 							<div class="base-container bg-ay-purple flex flex-col items-center">
 								<span class="text-xs">Alt</span>
@@ -44,9 +44,9 @@
 								<span>{{ object.magnitude }}</span>
 							</div>
 
-					    </div>
+						</div>
 
-				    </li>
+					</li>
 
 				</ul>
 
@@ -64,41 +64,43 @@
 
 <script setup>
 
-import { ref, watch, onMounted, onUnmounted } from "vue";
+import { ref, watch, onUnmounted } from "vue";
 import { getDistance } from "../utils/geolocation";
-import SkeletonCard from './SkeletonCard.vue'
+import SkeletonCard from './SkeletonCard.vue';
 
-const props = defineProps({
-	userCoordinates: {
-		type: Object,
-		required: true,
-	},
-});
+import { useUserLocationStore } from "@/stores/userLocationStore";
+import { storeToRefs } from "pinia";
+
+const locationStore = useUserLocationStore();
+const { userCoordinates } = storeToRefs(locationStore);
 
 const emit = defineEmits(["errorOccurred"]);
 
+// Constants
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const CELESTIAL_FETCH_INTERVAL = parseInt(import.meta.env.VITE_CELESTIAL_FETCH_INTERVAL || "60000", 10);
 const GEOLOCATION_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOLD || "100", 10);
 
-let lastCoords = null;
-let lastFetchTime = 0;
-
+// Reactive state
 const celestialObjects = ref([]);
 const isLoading = ref(true);
 const error = ref("");
-let intervalId = null;
 
+// Internal control
+let intervalId = null;
+let lastCoords = null;
+let lastFetchTime = 0;
+
+// Fetch function
 async function fetchCelestialData() {
 
-	const coords = props.userCoordinates;
+	const coords = userCoordinates.value;
 	if (!coords.lat || !coords.lon) return;
 
 	isLoading.value = true;
 	error.value = "";
 
 	try {
-
 		const res = await fetch(`${API_BASE_URL}/api/celestial?lat=${coords.lat}&lon=${coords.lon}`);
 		const data = await res.json();
 
@@ -106,38 +108,28 @@ async function fetchCelestialData() {
 
 		celestialObjects.value = data.visible;
 
-		if (data.visible.length === 0) {
-			celestialObjects.value = [];
-			return;
-		}
-
 	} catch (err) {
-
-		console.error("[CelestialObjects] Error:", err);
+		console.error("[CelestialObjectsCard] Error:", err);
 		error.value = "❌ Failed to fetch celestial data.";
 		emit("errorOccurred", error.value);
-
 	} finally {
 		isLoading.value = false;
 	}
 
 }
 
+// Watcher for user location changes
 watch(
 
-	() => props.userCoordinates,
+	() => userCoordinates.value,
 	(coords) => {
-
-		// console.log("[Watcher Triggered] Coords:", coords); // Debug
-
 		if (!coords || !coords.lat || !coords.lon) return;
 
 		const now = Date.now();
-
 		const shouldSkip =
 			lastCoords &&
 			getDistance(lastCoords.lat, lastCoords.lon, coords.lat, coords.lon) < GEOLOCATION_THRESHOLD &&
-				(now - lastFetchTime) < CELESTIAL_FETCH_INTERVAL;
+			(now - lastFetchTime) < CELESTIAL_FETCH_INTERVAL;
 
 		if (shouldSkip) {
 			console.log("Skipping celestial fetch: location & time thresholds not met");
@@ -148,15 +140,16 @@ watch(
 		lastFetchTime = now;
 
 		fetchCelestialData();
-	    if (!intervalId) {
-	    	intervalId = setInterval(fetchCelestialData, CELESTIAL_FETCH_INTERVAL);
-	    }
 
+		if (!intervalId) {
+			intervalId = setInterval(fetchCelestialData, CELESTIAL_FETCH_INTERVAL);
+		}
 	},
 	{ immediate: true }
 
 );
 
+// Cleanup
 onUnmounted(() => {
 	if (intervalId) clearInterval(intervalId);
 });

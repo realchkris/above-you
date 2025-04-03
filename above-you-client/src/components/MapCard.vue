@@ -92,13 +92,17 @@ import "leaflet/dist/leaflet.css";
 import { getDistance } from "../utils/geolocation.js";
 import SkeletonCard from './SkeletonCard.vue';
 
+import { useUserLocationStore } from "@/stores/userLocationStore"
+import { storeToRefs } from 'pinia'
+
+const locationStore = useUserLocationStore();
+const { userCoordinates, userLocation } = storeToRefs(locationStore);
+
 // Emits
-const emit = defineEmits(["errorOccurred", "userLocationUpdated"]);
+const emit = defineEmits(["errorOccurred"]);
 
 // Refs
 const map = ref(null);
-const userCoordinates = ref({ lat: null, lon: null });
-const userLocation = ref("");
 
 const isMapLoading = ref(true);
 const isLoadingLocation = ref(true);
@@ -182,7 +186,10 @@ async function handleGeolocationSuccess(pos) {
 
 	if (!lat || !lon || !map.value) return;
 
-	userCoordinates.value = { lat, lon };
+	if (userCoordinates) {
+		userCoordinates.value = { lat, lon };
+	}
+
 	isLoadingCoordinates.value = false;
 
 	const needsRecenter = shouldRecenterMap(lat, lon);
@@ -205,8 +212,6 @@ async function handleGeolocationSuccess(pos) {
 	} else {
 		userMarker = L.marker([lat, lon], { icon: defaultIcon }).addTo(map.value);
 	}
-
-	emit("userLocationUpdated", userCoordinates.value);
 
 }
 

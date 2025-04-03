@@ -55,14 +55,13 @@
 
 import { ref, watch, computed, onUnmounted } from "vue";
 import { getDistance } from "../utils/geolocation";
-import SkeletonCard from './SkeletonCard.vue'
+import SkeletonCard from './SkeletonCard.vue';
 
-const props = defineProps({
-	userCoordinates: {
-		type: Object,
-		required: true,
-	},
-});
+import { storeToRefs } from "pinia";
+import { useUserLocationStore } from "@/stores/userLocationStore";
+
+const locationStore = useUserLocationStore();
+const { userCoordinates } = storeToRefs(locationStore);
 
 const emit = defineEmits(["errorOccurred"]);
 
@@ -113,7 +112,7 @@ function formatTime(timestamp) {
 
 async function fetchWeatherData() {
 
-	const coords = props.userCoordinates;
+	const coords = userCoordinates.value;
 	if (!coords.lat || !coords.lon) return;
 
 	isLoading.value = true;
@@ -141,7 +140,7 @@ async function fetchWeatherData() {
 
 watch(
 
-	() => props.userCoordinates,
+	() => userCoordinates.value,
 	(coords) => {
 
 		if (!coords || !coords.lat || !coords.lon) return;
