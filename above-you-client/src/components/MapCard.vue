@@ -4,26 +4,27 @@
 	<!-- Reverse Geocoded User Location -->
 	<transition name="fade" mode="out-in">
 		<div
-			:key="ui.loading.location ? 'loading' : ui.errors.location ? 'error' : 'data'"
-			class="base-container bg-ay-dark text-white mb-4 min-h-[40px] max-w-80 flex justify-center items-center"
+		:key="ui.loading.location ? 'loading' : ui.errors.location ? 'error' : 'data'"
+		class="base-container bg-ay-dark text-white mb-4 w-full max-w-xs flex justify-center items-center"
 		>
-			<!-- Skeleton Loader -->
-			<template v-if="ui.loading.location">
-				<SkeletonCard class="h-6 w-3/5" />
-			</template>
 
-			<!-- Error -->
-			<template v-else-if="ui.errors.location">
-				<span>❌</span>
-			</template>
+		<!-- Skeleton Loader -->
+		<template v-if="ui.loading.location">
+			<SkeletonCard class="h-6 w-3/5" />
+		</template>
 
-			<!-- Data -->
-			<template v-else>
-				<div class="flex flex-col items-center break-words whitespace-pre-wrap">
-					<img :src="youIcon" class="image-sm">
-					<span>{{ userLocation }}</span>
-				</div>
-			</template>
+		<!-- Error -->
+		<template v-else-if="ui.errors.location">
+			<span class="text-xl">❌</span>
+		</template>
+
+		<!-- Data -->
+		<template v-else>
+			<div class="flex flex-col items-center gap-1 text-center w-full break-words whitespace-pre-wrap px-4">
+				<img :src="youIcon" class="image-sm" />
+				<span>{{ userLocation }}</span>
+			</div>
+		</template>
 
 		</div>
 	</transition>

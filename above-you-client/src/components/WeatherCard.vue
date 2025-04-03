@@ -25,19 +25,22 @@
 
 					<!-- Condition -->
 					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
-						<img class="image-sm" :src="getWeatherIconUrl(weather.weathercode)" alt="Weather icon">
+						<img class="image-sm mb-2" :src="getWeatherIconUrl(weather.weathercode)" alt="Weather icon">
 						<span class="text-xs">{{ weatherDescription }}</span>
 					</div>
 
 					<!-- Temperature -->
 					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
-						<span class="text-xs">Temperature</span>
-						<span>{{ weather.temperature }}°C</span>
+						<div class="flex mb-2">
+							<img :src="termometerIcon" alt="Thermometer Icon" class="image-sm">
+							<img :src="getTemperatureIconUrl(weather.temperature)" alt="Temperature Icon" class="image-sm" />
+						</div>
+						<span class="text-xs">{{ weather.temperature }}°C</span>
 					</div>
 
 					<!-- Wind -->
 					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
-						<span class="text-xs">Wind</span>
+						<img class="image-sm mb-2" :src="getWindIconUrl(weather.windspeed)" alt="Wind icon" />
 						<span>{{ weather.windspeed }} km/h @ {{ weather.winddirection }}°</span>
 					</div>
 
@@ -53,10 +56,11 @@
 
 <script setup>
 
+// Imports
 import { ref, watch, computed, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 
-import SkeletonCard from './SkeletonCard.vue';
+import SkeletonCard from "./SkeletonCard.vue";
 import { getDistance } from "../utils/geolocation";
 
 import { useUserLocationStore } from "@/stores/userLocationStore";
@@ -64,42 +68,37 @@ import { useUIStore } from "@/stores/uiStore";
 import { usePollingStore } from "@/stores/pollingStore";
 
 import { getWeatherDescription, getWeatherIconUrl } from "@/utils/weatherCodes";
+import { getTemperatureIconUrl } from "@/utils/temperature";
+import { getWindIconUrl } from "@/utils/wind";
+
+import termometerIcon from "../assets/temperature/thermometer.png";
 
 // Stores
 const locationStore = useUserLocationStore();
 const ui = useUIStore();
+const polling = usePollingStore();
+
 const { userCoordinates } = storeToRefs(locationStore);
+const POLL_KEY = "weather";
 
 ui.setLoading("weather", true);
-
-const polling = usePollingStore();
-const POLL_KEY = "weather";
 
 // Constants
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const WEATHER_FETCH_INTERVAL = parseInt(import.meta.env.VITE_WEATHER_FETCH_INTERVAL || "300000", 10);
 const GEOLOCATION_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOLD || "100", 10);
 
-// State
+// Reactive state
 const weather = ref({});
 let lastCoords = null;
 let lastFetchTime = 0;
 
-// Mapping
-const weatherCodeMap = {
-	0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
-	45: "Fog", 48: "Rime fog", 51: "Light drizzle", 53: "Moderate drizzle",
-	55: "Dense drizzle", 61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",
-	71: "Slight snow", 73: "Moderate snow", 75: "Heavy snow",
-	80: "Light showers", 81: "Moderate showers", 82: "Violent showers",
-	95: "Thunderstorm", 96: "Thunderstorm + light hail", 99: "Thunderstorm + heavy hail",
-};
-
+// Computed
 const weatherDescription = computed(() =>
-	weatherCodeMap[weather.value.weathercode] || "Unknown"
+	getWeatherDescription(weather.value.weathercode)
 );
 
-// API Fetcher
+// Functions
 async function fetchWeatherData() {
 	const coords = userCoordinates.value;
 	if (!coords.lat || !coords.lon) return;
@@ -125,7 +124,7 @@ async function fetchWeatherData() {
 	}
 }
 
-// React to coordinates change
+// Watchers
 watch(
 	() => userCoordinates.value,
 	(coords) => {
@@ -146,14 +145,12 @@ watch(
 		lastFetchTime = now;
 
 		fetchWeatherData();
-
-		// Start polling
 		polling.start(POLL_KEY, fetchWeatherData, WEATHER_FETCH_INTERVAL);
-
 	},
 	{ immediate: true }
 );
 
+// Lifecycle
 onUnmounted(() => {
 	polling.stop(POLL_KEY);
 });

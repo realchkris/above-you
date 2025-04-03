@@ -13,11 +13,18 @@
 
 				<!-- Loading -->
 				<div v-if="ui.loading.iss" class="flex flex-col items-center gap-3 w-full">
-					<div class="flex gap-3">
-						<SkeletonCard class="h-16 w-24" />
-						<SkeletonCard class="h-16 w-24" />
+					<!-- Wrap everything inside a full-width container -->
+					<div class="w-full flex flex-col items-center gap-3">
+
+						<!-- Row of Lat & Lon skeletons -->
+						<div class="flex gap-3 w-full">
+							<SkeletonCard class="h-16 flex-1" />
+							<SkeletonCard class="h-16 flex-1" />
+						</div>
+
+						<!-- Distance Skeleton -->
+						<SkeletonCard class="h-16 w-1/2" />
 					</div>
-					<SkeletonCard class="h-16 w-24" />
 				</div>
 
 				<!-- Error -->

@@ -28,11 +28,11 @@
 
 			<!-- ISS Tracker Card -->
 			<CollapsibleCard
-				title="ISS Tracker"
+				title="International Space Station"
 				bgColor="bg-ay-green"
 				:icon="ISSIcon"
 			>
-				<div class="base-container bg-ay-green text-white">
+				<div class="base-container bg-ay-green text-white w-full">
 					<ISSCard />
 				</div>
 			</CollapsibleCard>

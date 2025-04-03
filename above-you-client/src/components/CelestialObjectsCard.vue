@@ -25,23 +25,28 @@
 						class="base-container bg-ay-purple-light"
 					>
 
-						<!-- Celestial object name -->
-						<div class="font-semibold mb-2">{{ object.name ?? "–" }}</div>
-						
-						<!-- Celestial object details -->
-						<div class="flex gap-3 justify-center">
+						<div class="flex flex-wrap items-center gap-4 justify-between">
 
-							<div class="base-container bg-ay-purple flex flex-col items-center">
-								<span class="text-xs">Alt</span>
-								<span>{{ object.altitude != null ? object.altitude.toFixed(1) : "–" }}°</span>
+							<!-- Icon + Name -->
+							<div class="flex items-center gap-2 min-w-[120px]">
+								<img :src="getCelestialIconUrl(object.name)" :alt="`${object.name} Icon`" class="image-sm">
+								<div class="font-semibold">{{ object.name ?? "–" }}</div>
 							</div>
-							<div class="base-container bg-ay-purple flex flex-col items-center">
-								<span class="text-xs">Az</span>
-								<span>{{ object.azimuth != null ? object.azimuth.toFixed(1) : "–" }}°</span>
-							</div>
-							<div class="base-container bg-ay-purple flex flex-col items-center">
-								<span class="text-xs">Mag</span>
-								<span>{{ object.magnitude ?? "–" }}</span>
+
+							<!-- Celestial object details -->
+							<div class="flex flex-wrap justify-center gap-3 w-full">
+								<div class="base-container bg-ay-purple flex-1 flex flex-col items-center min-w-[90px]">
+									<span class="text-xs">Alt</span>
+									<span>{{ object.altitude != null ? object.altitude.toFixed(1) : "–" }}°</span>
+								</div>
+								<div class="base-container bg-ay-purple flex-1 flex flex-col items-center min-w-[90px]">
+									<span class="text-xs">Az</span>
+									<span>{{ object.azimuth != null ? object.azimuth.toFixed(1) : "–" }}°</span>
+								</div>
+								<div class="base-container bg-ay-purple flex-1 flex flex-col items-center min-w-[90px]">
+									<span class="text-xs">Mag</span>
+									<span>{{ object.magnitude ?? "–" }}</span>
+								</div>
 							</div>
 
 						</div>
@@ -55,7 +60,7 @@
 		</transition>
 
 		<p v-if="!ui.loading.celestial && celestialObjects.length === 0 && !ui.errors.celestial" class="text-sm text-gray-400">
-		  No visible celestial objects right now
+			No visible celestial objects right now
 		</p>
 		
 	</div>
@@ -73,6 +78,8 @@ import SkeletonCard from "./SkeletonCard.vue";
 import { useUserLocationStore } from "@/stores/userLocationStore";
 import { useUIStore } from "@/stores/uiStore";
 import { usePollingStore } from "@/stores/pollingStore";
+
+import { getCelestialIconUrl } from "@/utils/celestial";
 
 // Stores
 const locationStore = useUserLocationStore();

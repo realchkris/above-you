@@ -14,8 +14,8 @@
 
 		<!-- Login Icon -->
 		<button class="round-button bg-ay-lavender hover:bg-ay-purple">
-      		<img class="icon-button icon-md" src="../assets/login.png">
-    	</button>
+			<img class="icon-button icon-md" src="../assets/login.png">
+		</button>
 
 	</header>
 

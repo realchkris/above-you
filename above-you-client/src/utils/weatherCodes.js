@@ -1,5 +1,3 @@
-// src/utils/weatherCodes.js
-
 export const weatherCodeMap = {
 	0: "Clear sky",
 	1: "Mainly clear",
