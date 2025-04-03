@@ -11,7 +11,15 @@ export const useUIStore = defineStore('ui', () => {
 
 	// Set a specific error for a module
 	function setError(module, message) {
-		errors[module] = message
+		errors[module] = message;
+		globalError.value = message;
+
+		// Optional: auto-clear after 5 seconds
+		setTimeout(() => {
+			if (globalError.value === message) {
+				globalError.value = null;
+			}
+		}, 5000);
 	}
 
 	function clearError(module) {
@@ -22,7 +30,7 @@ export const useUIStore = defineStore('ui', () => {
 		Object.keys(errors).forEach(key => delete errors[key])
 	}
 
-	// Global error setter if needed (eg. toasts)
+	// Global error setter if needed
 	function setGlobalError(message) {
 		globalError.value = message
 	}

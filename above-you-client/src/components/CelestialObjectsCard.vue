@@ -72,12 +72,17 @@ import SkeletonCard from "./SkeletonCard.vue";
 
 import { useUserLocationStore } from "@/stores/userLocationStore";
 import { useUIStore } from "@/stores/uiStore";
+import { usePollingStore } from "@/stores/pollingStore";
 
 // Stores
 const locationStore = useUserLocationStore();
 const { userCoordinates } = storeToRefs(locationStore);
-
 const ui = useUIStore();
+
+ui.setLoading("celestial", true);
+
+const polling = usePollingStore();
+const POLL_KEY = "celestial"; // Any unique ID works
 
 // Constants
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -88,7 +93,6 @@ const GEOLOCATION_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOL
 const celestialObjects = ref([]);
 
 // Internal state
-let intervalId = null;
 let lastCoords = null;
 let lastFetchTime = 0;
 
@@ -119,7 +123,7 @@ async function fetchCelestialData() {
 watch(
 	() => userCoordinates.value,
 	(coords) => {
-		if (!coords || !coords.lat || !coords.lon) return;
+		if (!coords?.lat || !coords?.lon) return;
 
 		const now = Date.now();
 		const shouldSkip =
@@ -134,16 +138,15 @@ watch(
 
 		fetchCelestialData();
 
-		if (!intervalId) {
-			intervalId = setInterval(fetchCelestialData, CELESTIAL_FETCH_INTERVAL);
-		}
+		// Start polling after first valid fetch
+		polling.start(POLL_KEY, fetchCelestialData, CELESTIAL_FETCH_INTERVAL);
 	},
 	{ immediate: true }
 );
 
-// Cleanup on unmount
+// Stop polling when unmounted
 onUnmounted(() => {
-	if (intervalId) clearInterval(intervalId);
+	polling.stop(POLL_KEY);
 });
 
 </script>

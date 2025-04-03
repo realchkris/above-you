@@ -19,8 +19,8 @@
 
 			<!-- Data -->
 			<template v-else>
-				<div class="text-sm text-center break-words whitespace-pre-wrap">
-					<span class="text-xs">Your location</span><br />
+				<div class="flex flex-col items-center break-words whitespace-pre-wrap">
+					<img :src="youIcon" class="image-sm">
 					<span>{{ userLocation }}</span>
 				</div>
 			</template>
@@ -43,7 +43,7 @@
 
 			<!-- Error -->
 			<template v-else-if="ui.errors.coordinates">
-				<span class="text-xs">❌</span>
+				<span>❌</span>
 			</template>
 
 			<!-- Data -->
@@ -51,15 +51,15 @@
 				<div class="flex gap-4">
 
 					<!-- Latitude -->
-					<div class="base-container bg-ay-lavender flex flex-col items-center">
+					<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] overflow-hidden">
 						<span class="text-xs">Lat</span>
-						<span>{{ userCoordinates.lat ?? "–" }}</span>
+						<span class="truncate">{{ userCoordinates.lat ?? "–" }}</span>
 					</div>
 
 					<!-- Longitude -->
-					<div class="base-container bg-ay-lavender flex flex-col items-center">
+					<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] overflow-hidden">
 						<span class="text-xs">Lon</span>
-						<span>{{ userCoordinates.lon ?? "–" }}</span>
+						<span class="whitespace-normal">{{ userCoordinates.lon ?? "–" }}</span>
 					</div>
 
 				</div>
@@ -96,6 +96,8 @@ import SkeletonCard from './SkeletonCard.vue';
 import { storeToRefs } from "pinia";
 import { useUserLocationStore } from "@/stores/userLocationStore";
 import { useUIStore } from "@/stores/uiStore";
+
+import youIcon from '../assets/you.png';
 
 // Stores
 const locationStore = useUserLocationStore();

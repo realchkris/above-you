@@ -12,12 +12,12 @@
 			>
 
 				<!-- Loading -->
-				<div v-if="ui.loading.iss" class="flex flex-col items-center gap-3">
+				<div v-if="ui.loading.iss" class="flex flex-col items-center gap-3 w-full">
 					<div class="flex gap-3">
-						<SkeletonCard class="h-16 w-20" />
-						<SkeletonCard class="h-16 w-20" />
+						<SkeletonCard class="h-16 w-24" />
+						<SkeletonCard class="h-16 w-24" />
 					</div>
-					<SkeletonCard class="h-16 w-20" />
+					<SkeletonCard class="h-16 w-24" />
 				</div>
 
 				<!-- Error -->
@@ -53,6 +53,7 @@
 					</div>
 
 				</div>
+				
 			</div>
 
 		</transition>
@@ -70,10 +71,15 @@ import { getDistance } from "../utils/geolocation.js";
 
 import { useUserLocationStore } from "@/stores/userLocationStore";
 import { useUIStore } from "@/stores/uiStore";
+import { usePollingStore } from "@/stores/pollingStore";
 
 // Stores
 const { userCoordinates } = storeToRefs(useUserLocationStore());
 const ui = useUIStore();
+const polling = usePollingStore();
+const POLL_KEY = "iss"; // Any unique ID works
+
+ui.setLoading("iss", true);
 
 // Constants
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -149,16 +155,14 @@ watch(
 	{ immediate: true }
 );
 
-// Start polling on mount
-let intervalId = null;
-
+// Start polling
 onMounted(() => {
-	fetchISSCoordinates();
-	intervalId = setInterval(fetchISSCoordinates, FETCH_INTERVAL);
+	polling.start(POLL_KEY, fetchISSCoordinates, FETCH_INTERVAL);
 });
 
+// Stop polling on unmount
 onUnmounted(() => {
-	clearInterval(intervalId);
+	polling.stop(POLL_KEY);
 });
 
 </script>

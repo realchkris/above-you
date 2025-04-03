@@ -25,8 +25,8 @@
 
 					<!-- Condition -->
 					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
-						<span class="text-xs">Condition</span>
-						<span>{{ weatherDescription }}</span>
+						<img class="image-sm" :src="getWeatherIconUrl(weather.weathercode)" alt="Weather icon">
+						<span class="text-xs">{{ weatherDescription }}</span>
 					</div>
 
 					<!-- Temperature -->
@@ -58,13 +58,22 @@ import { storeToRefs } from "pinia";
 
 import SkeletonCard from './SkeletonCard.vue';
 import { getDistance } from "../utils/geolocation";
+
 import { useUserLocationStore } from "@/stores/userLocationStore";
 import { useUIStore } from "@/stores/uiStore";
+import { usePollingStore } from "@/stores/pollingStore";
+
+import { getWeatherDescription, getWeatherIconUrl } from "@/utils/weatherCodes";
 
 // Stores
 const locationStore = useUserLocationStore();
 const ui = useUIStore();
 const { userCoordinates } = storeToRefs(locationStore);
+
+ui.setLoading("weather", true);
+
+const polling = usePollingStore();
+const POLL_KEY = "weather";
 
 // Constants
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -75,7 +84,6 @@ const GEOLOCATION_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOL
 const weather = ref({});
 let lastCoords = null;
 let lastFetchTime = 0;
-let intervalId = null;
 
 // Mapping
 const weatherCodeMap = {
@@ -121,7 +129,7 @@ async function fetchWeatherData() {
 watch(
 	() => userCoordinates.value,
 	(coords) => {
-		if (!coords || !coords.lat || !coords.lon) return;
+		if (!coords?.lat || !coords?.lon) return;
 
 		const now = Date.now();
 		const shouldSkip =
@@ -139,15 +147,15 @@ watch(
 
 		fetchWeatherData();
 
-		if (!intervalId) {
-			intervalId = setInterval(fetchWeatherData, WEATHER_FETCH_INTERVAL);
-		}
+		// Start polling
+		polling.start(POLL_KEY, fetchWeatherData, WEATHER_FETCH_INTERVAL);
+
 	},
 	{ immediate: true }
 );
 
 onUnmounted(() => {
-	if (intervalId) clearInterval(intervalId);
+	polling.stop(POLL_KEY);
 });
 
 </script>
