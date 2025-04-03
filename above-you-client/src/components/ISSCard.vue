@@ -144,12 +144,13 @@ watch(
 		const allValid = userLat && userLon && issLat && issLon;
 
 		if (!allValid) {
-			if (!hasCalculatedDistance.value) {
+			// Avoid setting distance error too early
+			if (!hasCalculatedDistance.value && !ui.loading.iss && !ui.loading.coordinates) {
 				ui.setError("issDistance", "❌ Distance unavailable.");
 			}
 			return;
 		}
-
+		
 		ui.clearError("issDistance");
 
 		// Delay for UX smoothness
@@ -164,6 +165,7 @@ watch(
 
 // Start polling
 onMounted(() => {
+	fetchISSCoordinates(); // Immediate first call
 	polling.start(POLL_KEY, fetchISSCoordinates, FETCH_INTERVAL);
 });
 
