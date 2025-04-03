@@ -1,1 +1,0 @@
-<!-- PURPOSE: Lets users select a different location. -->

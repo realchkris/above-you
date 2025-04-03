@@ -25,7 +25,7 @@
 				:icon="celestialObjectsIcon"
 			>
 				<div class="base-container bg-ay-purple text-white">
-					<CelestialObjects
+					<CelestialObjectsCard
 						@errorOccurred="handleError"
 						:userCoordinates="userCoordinates"
 					/>
@@ -39,7 +39,7 @@
 				:icon="ISSIcon"
 			>
 				<div class="base-container bg-ay-green text-white">
-					<ISSFlyover
+					<ISSCard
 						@errorOccurred="handleError"
 						:userCoordinates="userCoordinates"
 					/>
@@ -49,7 +49,7 @@
 		</section>
 
 		<section class="base-container bg-ay-lavender w-full">
-			<MapView
+			<MapCard
 				@errorOccurred="handleError"
 				@userLocationUpdated="updateUserLocation"
 			/>
@@ -62,9 +62,9 @@
 <script setup>
 
 import WeatherCard from './WeatherCard.vue'
-import CelestialObjects from './CelestialObjects.vue'
-import ISSFlyover from './ISSFlyover.vue'
-import MapView from './MapView.vue'
+import CelestialObjectsCard from './CelestialObjectsCard.vue'
+import ISSCard from './ISSCard.vue'
+import MapCard from './MapCard.vue'
 import CollapsibleCard from './CollapsibleCard.vue';
 
 import weatherIcon from '../assets/weather.png';
@@ -81,7 +81,7 @@ const handleError = (message) => {
 	emit("errorOccurred", message);
 };
 
-// Function to update user location from MapView.vue
+// Function to update user location from MapCard.vue
 function updateUserLocation(coords) {
 		userCoordinates.value = coords;
 }

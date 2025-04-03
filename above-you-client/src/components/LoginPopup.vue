@@ -1,1 +1,0 @@
-<!-- PURPOSE: Handles user authentication modal. -->
