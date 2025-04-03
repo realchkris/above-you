@@ -4,16 +4,16 @@
 	<!-- Reverse Geocoded User Location -->
 	<transition name="fade" mode="out-in">
 		<div
-			:key="isLoadingLocation ? 'loading' : locationError ? 'error' : 'data'"
+			:key="ui.loading.location ? 'loading' : ui.errors.location ? 'error' : 'data'"
 			class="base-container bg-ay-dark text-white mb-4 min-h-[40px] max-w-80 flex justify-center items-center"
 		>
 			<!-- Skeleton Loader -->
-			<template v-if="isLoadingLocation">
+			<template v-if="ui.loading.location">
 				<SkeletonCard class="h-6 w-3/5" />
 			</template>
 
 			<!-- Error -->
-			<template v-else-if="locationError">
+			<template v-else-if="ui.errors.location">
 				<span>❌</span>
 			</template>
 
@@ -31,19 +31,19 @@
 	<!-- Live Coordinates -->
 	<transition name="fade" mode="out-in">
 		<div
-			:key="isLoadingCoordinates ? 'loading' : coordinatesError ? 'error' : 'data'"
+			:key="ui.loading.coordinates ? 'loading' : ui.errors.coordinates ? 'error' : 'data'"
 			class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4"
 		>
 
 			<!-- Skeleton Loader -->
-			<template v-if="isLoadingCoordinates">
+			<template v-if="ui.loading.coordinates">
 				<SkeletonCard class="h-12 w-16" />
 				<SkeletonCard class="h-12 w-16" />
 			</template>
 
 			<!-- Error -->
-			<template v-else-if="coordinatesError">
-				<span class="text-xl">❌</span>
+			<template v-else-if="ui.errors.coordinates">
+				<span class="text-xs">❌</span>
 			</template>
 
 			<!-- Data -->
@@ -53,13 +53,13 @@
 					<!-- Latitude -->
 					<div class="base-container bg-ay-lavender flex flex-col items-center">
 						<span class="text-xs">Lat</span>
-						<span>{{ userCoordinates.lat }}</span>
+						<span>{{ userCoordinates.lat ?? "–" }}</span>
 					</div>
 
 					<!-- Longitude -->
 					<div class="base-container bg-ay-lavender flex flex-col items-center">
 						<span class="text-xs">Lon</span>
-						<span>{{ userCoordinates.lon }}</span>
+						<span>{{ userCoordinates.lon ?? "–" }}</span>
 					</div>
 
 				</div>
@@ -72,13 +72,14 @@
 	<div class="map-container relative">
 		<transition name="fade" mode="out-in">
 			<SkeletonCard
-				v-if="isMapLoading"
+				v-if="ui.loading.map"
 				class="absolute top-0 left-0 w-full h-full z-10 rounded"
 			/>
 		</transition>
 
 		<!-- Always rendered to prevent init issues -->
-		<div id="map" class="z-0" />
+		<div id="map" class="z-0"></div>
+
 	</div>
 
 </template>
@@ -92,23 +93,24 @@ import "leaflet/dist/leaflet.css";
 import { getDistance } from "../utils/geolocation.js";
 import SkeletonCard from './SkeletonCard.vue';
 
-import { useUserLocationStore } from "@/stores/userLocationStore"
-import { storeToRefs } from 'pinia'
+import { storeToRefs } from "pinia";
+import { useUserLocationStore } from "@/stores/userLocationStore";
+import { useUIStore } from "@/stores/uiStore";
 
+// Stores
 const locationStore = useUserLocationStore();
 const { userCoordinates, userLocation } = storeToRefs(locationStore);
 
-// Emits
-const emit = defineEmits(["errorOccurred"]);
+const ui = useUIStore();
 
-// Refs
+// Loading everything prematurely to avoid data divs showing up before skeleton loaders
+const loadingKeys = ["coordinates", "location", "map"];
+loadingKeys.forEach(key => ui.setLoading(key, true));
+
+// Internal refs
 const map = ref(null);
 
-const isMapLoading = ref(true);
-const isLoadingLocation = ref(true);
-const isLoadingCoordinates = ref(true);
-
-// State (non-reactive)
+// Static state
 let userMarker = null;
 let lastOSMCoords = null;
 let lastReverseGeocodeFailed = false;
@@ -118,9 +120,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000
 const GEO_TIMEOUT = parseInt(import.meta.env.VITE_GEOLOCATION_TIMEOUT || "15000", 10);
 const MAXIMUM_AGE = parseInt(import.meta.env.VITE_GEOLOCATION_MAXIMUM_AGE || "30000", 10);
 const DISTANCE_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOLD || "100", 10);
-const RECENTER_THRESHOLD = 1000; // in meters
+const RECENTER_THRESHOLD = 1000;
 
-// Fix Leaflet icons
+// Fix Leaflet icon issue
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
@@ -136,9 +138,10 @@ const defaultIcon = L.icon({
 // Reverse Geocoding
 async function fetchReverseGeocode(lat, lon) {
 
-	if (!userLocation.value) isLoadingLocation.value = true;
+	ui.setLoading("location", true);
 
 	try {
+
 		const res = await fetch(`${API_BASE_URL}/api/reverse-geocode?lat=${lat}&lon=${lon}`);
 		const data = await res.json();
 
@@ -146,18 +149,21 @@ async function fetchReverseGeocode(lat, lon) {
 
 		lastOSMCoords = { lat, lon };
 		return data.display_name;
+
 	} catch (error) {
+
 		console.warn("[Reverse Geocode]", error);
-		emit("errorOccurred", "❌ Unable to retrieve location.");
+		ui.setError("location", "❌ Unable to retrieve location");
 		lastReverseGeocodeFailed = true;
 		return "❌";
+
 	} finally {
-		isLoadingLocation.value = false;
+		ui.setLoading("location", false);
 	}
 
 }
 
-// Map Initialization
+// Initialize Map
 async function initializeMap() {
 
 	await nextTick();
@@ -169,16 +175,14 @@ async function initializeMap() {
 	}).addTo(map.value);
 
 	map.value.whenReady(() => {
-		setTimeout(() => {
-			isMapLoading.value = false;
-		}, 300);
+		setTimeout(() => ui.setLoading("map", false), 300);
 	});
 
 	setTimeout(() => map.value.invalidateSize(), 300);
 
 }
 
-// Geolocation
+// Handle Geolocation
 async function handleGeolocationSuccess(pos) {
 
 	const lat = pos.coords.latitude;
@@ -186,14 +190,11 @@ async function handleGeolocationSuccess(pos) {
 
 	if (!lat || !lon || !map.value) return;
 
-	if (userCoordinates) {
-		userCoordinates.value = { lat, lon };
-	}
+	ui.setLoading("coordinates", false);
+	userCoordinates.value = { lat, lon };
 
-	isLoadingCoordinates.value = false;
-
-	const needsRecenter = shouldRecenterMap(lat, lon);
-	if (needsRecenter) map.value.setView([lat, lon], 13);
+	const shouldRecenter = shouldRecenterMap(lat, lon);
+	if (shouldRecenter) map.value.setView([lat, lon], 13);
 
 	const isFirstLoad = !lastOSMCoords || lastReverseGeocodeFailed;
 	if (isFirstLoad) {
@@ -225,11 +226,13 @@ function handleGeolocationError(err) {
 		3: "⏳ Request timed out.",
 	};
 
-	emit("errorOccurred", messages[err.code] || "❓ Unknown location error.");
+	ui.setError("coordinates", messages[err.code] || "❓ Unknown location error.");
 
 }
 
 function setupGeolocation() {
+
+	ui.setLoading("coordinates", true);
 
 	navigator.geolocation.watchPosition(
 		handleGeolocationSuccess,
@@ -242,7 +245,6 @@ function setupGeolocation() {
 // Utilities
 function shouldRecenterMap(lat, lon) {
 	if (!map.value) return false;
-
 	const center = map.value.getCenter();
 	return getDistance(center.lat, center.lng, lat, lon) > RECENTER_THRESHOLD;
 }
@@ -255,12 +257,11 @@ function shouldUpdateLocation(newLat, newLon) {
 
 // Lifecycle
 onMounted(async () => {
-	isLoadingCoordinates.value = true;
+	ui.setLoading("map", true);
 	await initializeMap();
 	setupGeolocation();
 });
 
-// Invalidate map size on resize
 window.addEventListener("resize", () => {
 	if (map.value) setTimeout(() => map.value.invalidateSize(), 300);
 });

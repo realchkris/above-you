@@ -6,42 +6,42 @@
 		<transition name="fade" mode="out-in">
 
 			<!-- Key changes based on state -->
-			<div :key="isLoading ? 'loading' : error ? 'error' : 'data'" class="w-full flex items-center justify-center">
+			<div :key="ui.loading.celestial ? 'loading' : ui.errors.celestial ? 'error' : 'data'" class="w-full flex items-center justify-center">
 
 				<!-- Loading -->
-				<div v-if="isLoading" class="space-y-3 w-3/5">
+				<div v-if="ui.loading.celestial" class="space-y-3 w-3/5">
 					<SkeletonCard />
 				</div>
 
 				<!-- Error -->
-				<div v-else-if="error">❌</div>
+				<div v-else-if="ui.errors.celestial">❌</div>
 
 				<!-- List -->
 				<ul v-else class="space-y-2">
 
 					<li
 						v-for="(object, index) in celestialObjects"
-						:key="index"
+						:key="object.name || index"
 						class="base-container bg-ay-purple-light"
 					>
 
 						<!-- Celestial object name -->
-						<div class="font-semibold mb-2">{{ object.name }}</div>
+						<div class="font-semibold mb-2">{{ object.name ?? "–" }}</div>
 						
 						<!-- Celestial object details -->
 						<div class="flex gap-3 justify-center">
 
 							<div class="base-container bg-ay-purple flex flex-col items-center">
 								<span class="text-xs">Alt</span>
-								<span>{{ object.altitude.toFixed(1) }}°</span>
+								<span>{{ object.altitude != null ? object.altitude.toFixed(1) : "–" }}°</span>
 							</div>
 							<div class="base-container bg-ay-purple flex flex-col items-center">
 								<span class="text-xs">Az</span>
-								<span>{{ object.azimuth.toFixed(1) }}°</span>
+								<span>{{ object.azimuth != null ? object.azimuth.toFixed(1) : "–" }}°</span>
 							</div>
 							<div class="base-container bg-ay-purple flex flex-col items-center">
 								<span class="text-xs">Mag</span>
-								<span>{{ object.magnitude }}</span>
+								<span>{{ object.magnitude ?? "–" }}</span>
 							</div>
 
 						</div>
@@ -54,7 +54,7 @@
 
 		</transition>
 
-		<p v-if="!isLoading && celestialObjects.length === 0 && !error" class="text-sm text-gray-400">
+		<p v-if="!ui.loading.celestial && celestialObjects.length === 0 && !ui.errors.celestial" class="text-sm text-gray-400">
 		  No visible celestial objects right now
 		</p>
 		
@@ -65,16 +65,19 @@
 <script setup>
 
 import { ref, watch, onUnmounted } from "vue";
-import { getDistance } from "../utils/geolocation";
-import SkeletonCard from './SkeletonCard.vue';
-
-import { useUserLocationStore } from "@/stores/userLocationStore";
 import { storeToRefs } from "pinia";
 
+import { getDistance } from "../utils/geolocation";
+import SkeletonCard from "./SkeletonCard.vue";
+
+import { useUserLocationStore } from "@/stores/userLocationStore";
+import { useUIStore } from "@/stores/uiStore";
+
+// Stores
 const locationStore = useUserLocationStore();
 const { userCoordinates } = storeToRefs(locationStore);
 
-const emit = defineEmits(["errorOccurred"]);
+const ui = useUIStore();
 
 // Constants
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -83,22 +86,19 @@ const GEOLOCATION_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOL
 
 // Reactive state
 const celestialObjects = ref([]);
-const isLoading = ref(true);
-const error = ref("");
 
-// Internal control
+// Internal state
 let intervalId = null;
 let lastCoords = null;
 let lastFetchTime = 0;
 
-// Fetch function
+// Fetch celestial data
 async function fetchCelestialData() {
-
 	const coords = userCoordinates.value;
 	if (!coords.lat || !coords.lon) return;
 
-	isLoading.value = true;
-	error.value = "";
+	ui.setLoading("celestial", true);
+	ui.clearError("celestial");
 
 	try {
 		const res = await fetch(`${API_BASE_URL}/api/celestial?lat=${coords.lat}&lon=${coords.lon}`);
@@ -107,20 +107,16 @@ async function fetchCelestialData() {
 		if (!Array.isArray(data.visible)) throw new Error("Invalid response");
 
 		celestialObjects.value = data.visible;
-
 	} catch (err) {
 		console.error("[CelestialObjectsCard] Error:", err);
-		error.value = "❌ Failed to fetch celestial data.";
-		emit("errorOccurred", error.value);
+		ui.setError("celestial", "❌ Failed to fetch celestial data.");
 	} finally {
-		isLoading.value = false;
+		ui.setLoading("celestial", false);
 	}
-
 }
 
-// Watcher for user location changes
+// Watch location changes
 watch(
-
 	() => userCoordinates.value,
 	(coords) => {
 		if (!coords || !coords.lat || !coords.lon) return;
@@ -131,10 +127,7 @@ watch(
 			getDistance(lastCoords.lat, lastCoords.lon, coords.lat, coords.lon) < GEOLOCATION_THRESHOLD &&
 			(now - lastFetchTime) < CELESTIAL_FETCH_INTERVAL;
 
-		if (shouldSkip) {
-			console.log("Skipping celestial fetch: location & time thresholds not met");
-			return;
-		}
+		if (shouldSkip) return;
 
 		lastCoords = { ...coords };
 		lastFetchTime = now;
@@ -146,10 +139,9 @@ watch(
 		}
 	},
 	{ immediate: true }
-
 );
 
-// Cleanup
+// Cleanup on unmount
 onUnmounted(() => {
 	if (intervalId) clearInterval(intervalId);
 });

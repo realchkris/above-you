@@ -1,24 +1,59 @@
 import { defineStore } from 'pinia'
+import { reactive, ref } from 'vue'
 
-export const useUIStore = defineStore('ui', {
+export const useUIStore = defineStore('ui', () => {
 
-	state: () => ({
-		globalError: null,
-		isLoadingMap: true,
-		isLoadingCoordinates: true,
-		isLoadingLocation: true,
-	}),
+	// Reactive error and loading maps
+	const errors = reactive({}) // Holds the error messages for different features
+	const loading = reactive({}) // Holds which parts of the app are loading
 
-	actions: {
-		setError(message) {
-			this.globalError = message
-		},
-		clearError() {
-			this.globalError = null
-		},
-		setLoading(key, value) {
-			if (key in this) this[key] = value
-		}
+	const globalError = ref(null)
+
+	// Set a specific error for a module
+	function setError(module, message) {
+		errors[module] = message
 	}
-	
+
+	function clearError(module) {
+		delete errors[module]
+	}
+
+	function clearAllErrors() {
+		Object.keys(errors).forEach(key => delete errors[key])
+	}
+
+	// Global error setter if needed (eg. toasts)
+	function setGlobalError(message) {
+		globalError.value = message
+	}
+
+	function clearGlobalError() {
+		globalError.value = null
+	}
+
+	// Loading state per module
+	function setLoading(module, value) {
+		loading[module] = value
+	}
+
+	function isModuleLoading(module) {
+		return !!loading[module]
+	}
+
+	return {
+		errors,
+		loading,
+		globalError,
+
+		setError,
+		clearError,
+		clearAllErrors,
+
+		setGlobalError,
+		clearGlobalError,
+
+		setLoading,
+		isModuleLoading
+	}
+
 })

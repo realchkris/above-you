@@ -32,6 +32,7 @@
 </template>
 
 <script setup>
+
 import { ref } from "vue";
 
 const props = defineProps({
@@ -48,4 +49,5 @@ const props = defineProps({
 });
 
 const isOpen = ref(props.initiallyOpen);
+
 </script>

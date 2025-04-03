@@ -11,9 +11,7 @@
 				:icon="weatherIcon"
 			>
 				<div class="base-container bg-ay-dark text-white">
-					<WeatherCard
-						@errorOccurred="handleError"
-					/>
+					<WeatherCard />
 				</div>
 			</CollapsibleCard>
 
@@ -24,9 +22,7 @@
 				:icon="celestialObjectsIcon"
 			>
 				<div class="base-container bg-ay-purple text-white">
-					<CelestialObjectsCard
-						@errorOccurred="handleError"
-					/>
+					<CelestialObjectsCard />
 				</div>
 			</CollapsibleCard>
 
@@ -37,18 +33,14 @@
 				:icon="ISSIcon"
 			>
 				<div class="base-container bg-ay-green text-white">
-					<ISSCard
-						@errorOccurred="handleError"
-					/>
+					<ISSCard />
 				</div>
 			</CollapsibleCard>
 
 		</section>
 
 		<section class="base-container bg-ay-lavender w-full">
-			<MapCard
-				@errorOccurred="handleError"
-			/>
+			<MapCard />
 		</section>
 		
 	</div>
@@ -68,12 +60,5 @@ import celestialObjectsIcon from '../assets/comet.png';
 import ISSIcon from '../assets/iss.png';
 
 import { ref } from "vue";
-
-const emit = defineEmits(["errorOccurred"]);
-
-// Pass errors up to parent component
-const handleError = (message) => {
-	emit("errorOccurred", message);
-};
 
 </script>
