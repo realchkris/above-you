@@ -11,6 +11,7 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false,
   },
+  poolMode: process.env.POOL_MODE || 'transaction',
 });
 
 module.exports = pool;
