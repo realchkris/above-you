@@ -52,15 +52,15 @@
 				<div class="flex gap-4">
 
 					<!-- Latitude -->
-					<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] overflow-hidden">
+					<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] break-words">
 						<span class="text-xs">Lat</span>
-						<span class="truncate">{{ userCoordinates.lat ?? "–" }}</span>
+						<span class="text-sm text-center truncate">{{ userCoordinates.lat.toFixed(5) ?? "–" }}</span>
 					</div>
 
 					<!-- Longitude -->
-					<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] overflow-hidden">
+					<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] break-words">
 						<span class="text-xs">Lon</span>
-						<span class="whitespace-normal">{{ userCoordinates.lon ?? "–" }}</span>
+						<span class="text-sm text-center truncate">{{ userCoordinates.lon.toFixed(5) ?? "–" }}</span>
 					</div>
 
 				</div>

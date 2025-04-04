@@ -17,8 +17,10 @@
 			<img class="icon-button icon-md" src="../assets/login.png">
 		</button>
 
-		<!-- Modal in case Login button is pressed -->
-		<LoginModal v-if="showModal" @close="showModal = false" />
+		<!-- Login Modal -->
+		<transition name="fade">
+			<LoginModal v-if="showModal" @close="showModal = false" />
+		</transition>
 
 	</header>
 

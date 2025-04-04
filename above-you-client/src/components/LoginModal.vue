@@ -2,33 +2,75 @@
 
 <template>
 
-	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20" @click.self="closeOnOutside">
+	<!-- Modal Overlay -->
+	<div
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20"
+		@click.self="closeOnOutside"
+	>
 
-		<div class="base-container bg-ay-dark p-6 w-full max-w-sm relative">
+		<!-- Modal Container -->
+		<div class="base-container bg-ay-dark p-4 w-full max-w-xs relative">
 
-			<button class="absolute top-2 right-2 round-button bg-ay-lavender" @click="emitClose">✖</button>
+			<!-- Close Button -->
+			<button
+				class="absolute top-2 right-2 round-button bg-ay-lavender"
+				@click="emitClose"
+				aria-label="Close modal"
+			>
+				✖
+			</button>
 
-			<h2 class="text-xl font-semibold mb-4 text-center">Welcome</h2>
+			<!-- Title -->
+			<h2 class="text-lg font-semibold mb-3 text-center">Welcome</h2>
 
-			<!-- Form toggle -->
-			<div class="flex justify-center gap-4 mb-6">
-				<button class="text-sm" @click="mode = 'login'" :class="{ 'bg-ay-purple font-bold': mode === 'login' }">Login</button>
-				<button class="text-sm" @click="mode = 'register'" :class="{ 'bg-ay-teal font-bold text-black': mode === 'register' }">Register</button>
+			<!-- Toggle -->
+			<div class="flex justify-center gap-2 mb-4">
+				<button
+					class="text-sm px-2 py-1 rounded"
+					@click="mode = 'login'"
+					:class="{ 'bg-ay-purple font-bold': mode === 'login' }"
+				>
+					Login
+				</button>
+				<button
+					class="text-sm px-2 py-1 rounded"
+					@click="mode = 'register'"
+					:class="{ 'bg-ay-teal font-bold text-black': mode === 'register' }"
+				>
+					Register
+				</button>
 			</div>
 
-			<form @submit.prevent="submit">
+			<!-- Form -->
+			<form @submit.prevent="submit" class="space-y-3 flex flex-col">
 
-				<div class="mb-4">
-					<label class="text-sm">Email</label>
-					<input v-model="email" type="email" class="primary-input w-full" required />
+				<!-- Email -->
+				<div>
+					<label class="text-sm block mb-1">Email</label>
+					<input
+						v-model="email"
+						type="email"
+						class="primary-input w-full text-sm py-2"
+						required
+					/>
 				</div>
 
-				<div class="mb-4">
-					<label class="text-sm">Password</label>
-					<input v-model="password" type="password" class="primary-input w-full" required />
+				<!-- Password -->
+				<div>
+					<label class="text-sm block mb-1">Password</label>
+					<input
+						v-model="password"
+						type="password"
+						class="primary-input w-full text-sm py-2"
+						required
+					/>
 				</div>
 
-				<button type="submit" class="w-full primary-button p-4 font-bold">
+				<!-- Submit Button -->
+				<button
+					type="submit"
+					class="primary-button py-2 text-sm font-semibold w-full mx-auto"
+				>
 					{{ mode === 'login' ? 'Login' : 'Register' }}
 				</button>
 
