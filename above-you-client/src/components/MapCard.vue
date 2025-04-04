@@ -15,7 +15,7 @@
 
 		<!-- Error -->
 		<template v-else-if="ui.errors.location">
-			<span class="text-xl">❌</span>
+			<span>❌</span>
 		</template>
 
 		<!-- Data -->
@@ -169,6 +169,8 @@ async function fetchReverseGeocode(lat, lon) {
 // Initialize Map
 async function initializeMap() {
 
+	console.log("[Map] Initializing...");
+
 	await nextTick();
 
 	map.value = L.map("map").setView([51.505, -0.09], 13);
@@ -240,7 +242,9 @@ function setupGeolocation() {
 	navigator.geolocation.watchPosition(
 		handleGeolocationSuccess,
 		handleGeolocationError,
-		{ enableHighAccuracy: true, timeout: GEO_TIMEOUT, maximumAge: MAXIMUM_AGE }
+		{	enableHighAccuracy: true,
+			// timeout: GEO_TIMEOUT,
+			maximumAge: MAXIMUM_AGE	}
 	);
 
 }

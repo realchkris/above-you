@@ -17,7 +17,7 @@
 
 			<!-- Celestial Objects Card -->
 			<CollapsibleCard
-				title="Celestial Objects 🚧"
+				title="Celestial Objects"
 				bgColor="bg-ay-purple"
 				:icon="celestialObjectsIcon"
 			>
