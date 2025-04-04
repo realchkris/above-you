@@ -41,7 +41,7 @@
 
 		<!-- Loading -->
 		<template #loading>
-			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4">
+			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
 				<SkeletonCard class="h-12 w-16" />
 				<SkeletonCard class="h-12 w-16" />
 			</div>
@@ -49,15 +49,15 @@
 
 		<!-- Error -->
 		<template #error>
-			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4">
+			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
 				<span>❌</span>
 			</div>
 		</template>
 
 		<!-- Data -->
 		<template #default>
-			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4">
-				<div class="flex gap-4">
+			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
+				<div class="flex gap-3">
 					<!-- Latitude -->
 					<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] break-words">
 						<span class="text-xs">Lat</span>

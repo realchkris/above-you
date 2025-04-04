@@ -7,18 +7,16 @@
 
 			<!-- Loading -->
 			<template #loading>
-				<div class="w-full flex items-center justify-center">
-					<div class="space-y-3 w-3/5">
-						<SkeletonCard />
-						<SkeletonCard />
-						<SkeletonCard />
-					</div>
+				<div class="flex flex-col gap-3 items-center w-full">
+					<SkeletonCard class="h-16 w-48" />
+					<SkeletonCard class="h-16 w-48" />
+					<SkeletonCard class="h-16 w-48" />
 				</div>
 			</template>
 
 			<!-- Error -->
 			<template #error>
-				<div class="text-red-500 text-sm">❌ Failed to load weather data.</div>
+				<div>❌</div>
 			</template>
 
 			<!-- Data -->

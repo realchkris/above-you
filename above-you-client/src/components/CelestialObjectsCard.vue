@@ -7,14 +7,16 @@
 
 			<!-- Loading -->
 			<template #loading>
-				<div class="space-y-3 w-3/5">
-					<SkeletonCard />
+				<div class="flex flex-col gap-3 items-center w-full">
+					<SkeletonCard class="h-16 w-48" />
+					<SkeletonCard class="h-16 w-48" />
+					<SkeletonCard class="h-16 w-48" />
 				</div>
 			</template>
 
 			<!-- Error -->
 			<template #error>
-				<div class="text-red-500">❌ Failed to load celestial data.</div>
+				<div>❌</div>
 			</template>
 
 			<!-- Default (Data) -->

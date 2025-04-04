@@ -21,19 +21,19 @@
 			</button>
 
 			<!-- Title -->
-			<h2 class="text-lg font-semibold mb-3 text-center">Welcome</h2>
+			<h2 class="text-xl font-semibold mb-4 text-center">Welcome</h2>
 
 			<!-- Toggle -->
-			<div class="flex justify-center gap-2 mb-4">
+			<div class="flex justify-center gap-2 mb-5">
 				<button
-					class="text-sm px-2 py-1 rounded"
+					class="text-base px-3 py-1.5 rounded"
 					@click="mode = 'login'"
 					:class="{ 'bg-ay-purple font-bold': mode === 'login' }"
 				>
 					Login
 				</button>
 				<button
-					class="text-sm px-2 py-1 rounded"
+					class="text-base px-3 py-1.5 rounded"
 					@click="mode = 'register'"
 					:class="{ 'bg-ay-teal font-bold text-black': mode === 'register' }"
 				>
@@ -42,26 +42,26 @@
 			</div>
 
 			<!-- Form -->
-			<form @submit.prevent="submit" class="space-y-3 flex flex-col">
+			<form @submit.prevent="submit" class="space-y-4 flex flex-col">
 
 				<!-- Email -->
 				<div>
-					<label class="text-sm block mb-1">Email</label>
+					<label class="text-base block mb-1">Email</label>
 					<input
 						v-model="email"
 						type="email"
-						class="primary-input w-full text-sm py-2"
+						class="primary-input w-full text-base py-3"
 						required
 					/>
 				</div>
 
 				<!-- Password -->
 				<div>
-					<label class="text-sm block mb-1">Password</label>
+					<label class="text-base block mb-1">Password</label>
 					<input
 						v-model="password"
 						type="password"
-						class="primary-input w-full text-sm py-2"
+						class="primary-input w-full text-base py-3"
 						required
 					/>
 				</div>
@@ -69,7 +69,7 @@
 				<!-- Submit Button -->
 				<button
 					type="submit"
-					class="primary-button py-2 text-sm font-semibold w-full mx-auto"
+					class="primary-button py-3 text-base font-semibold w-full mx-auto"
 				>
 					{{ mode === 'login' ? 'Login' : 'Register' }}
 				</button>

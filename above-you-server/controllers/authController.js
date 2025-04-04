@@ -2,12 +2,18 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../services/db');
+const validator = require('validator');
 
 exports.register = async (req, res) => {
 
 	const { email, password } = req.body;
+
 	if (!email || !password) {
 		return res.status(400).json({ error: 'Email and password required' });
+	}
+
+	if (!validator.isEmail(email)) {
+		return res.status(400).json({ error: 'Invalid email address' });
 	}
 
 	try {
@@ -34,8 +40,13 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
 
 	const { email, password } = req.body;
+
 	if (!email || !password) {
 		return res.status(400).json({ error: 'Email and password required' });
+	}
+
+	if (!validator.isEmail(email)) {
+		return res.status(400).json({ error: 'Invalid email address' });
 	}
 
 	try {

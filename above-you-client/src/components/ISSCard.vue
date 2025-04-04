@@ -1,6 +1,5 @@
 <!-- PURPOSE: Shows the International Space Station (ISS) location and calculates the ISS - user distance in real time. -->
 <template>
-
 	<div class="flex flex-col items-center text-center">
 
 		<!-- ISS Location -->
@@ -8,20 +7,29 @@
 
 			<!-- Loading -->
 			<template #loading>
-				<div class="flex flex-col items-center gap-3 w-full">
+
+				<div class="flex flex-col items-center w-full gap-3">
+
 					<div class="w-full flex flex-col items-center gap-3">
-						<div class="flex gap-3 w-full">
-							<SkeletonCard class="h-16 flex-1" />
-							<SkeletonCard class="h-16 flex-1" />
+
+						<div class="flex gap-3 justify-center w-full">
+							<SkeletonCard class="h-16 w-[96px]" />
+							<SkeletonCard class="h-16 w-[96px]" />
 						</div>
-						<SkeletonCard class="h-16 w-1/2" />
+
+						<div class="w-full flex justify-center">
+							<SkeletonCard class="h-16 w-[96px]" />
+						</div>
+
 					</div>
+
 				</div>
+
 			</template>
 
 			<!-- Error -->
 			<template #error>
-				<div class="text-red-500 text-sm">❌ Failed to load ISS location</div>
+				<div>❌</div>
 			</template>
 
 			<!-- Data -->
