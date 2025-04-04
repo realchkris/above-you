@@ -15,7 +15,7 @@ export const useAuthStore = defineStore('auth', () => {
 		ui.clearError('auth');
 
 		try {
-			const res = await axios.post('/api/auth/login', { email, password });
+			const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, { email, password });  // <-- Absolute URL here
 			token.value = res.data.token;
 			user.value = res.data.user;
 			localStorage.setItem('auth_token', token.value);
@@ -32,7 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
 		ui.clearError('auth');
 
 		try {
-			const res = await axios.post('/api/auth/register', { email, password });
+			const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, { email, password });  // <-- Absolute URL here
 			token.value = res.data.token;
 			user.value = res.data.user;
 			localStorage.setItem('auth_token', token.value);
