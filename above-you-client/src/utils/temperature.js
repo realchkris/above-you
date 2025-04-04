@@ -12,7 +12,8 @@ export function getTemperatureIcon(temp) {
 
 const icons = import.meta.glob("../assets/temperature/*.png", {
 	eager: true,
-	as: "url",
+	import: 'default',
+	query: '?url'
 });
 
 export function getTemperatureIconUrl(temp) {

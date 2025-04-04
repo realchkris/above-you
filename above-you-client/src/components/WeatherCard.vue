@@ -3,36 +3,39 @@
 
 	<div class="flex flex-col items-center text-center">
 
-		<transition name="fade" mode="out-in">
+		<FetchStateWrapper :loading="ui.loading.weather" :error="ui.errors.weather">
 
-			<!-- Key changes based on state -->
-			<div :key="ui.loading.weather ? 'loading' : ui.errors.weather ? 'error' : 'data'" class="w-full">
-
-				<!-- Loading -->
-				<div v-if="ui.loading.weather" class="w-full flex items-center justify-center">
+			<!-- Loading -->
+			<template #loading>
+				<div class="w-full flex items-center justify-center">
 					<div class="space-y-3 w-3/5">
 						<SkeletonCard />
 						<SkeletonCard />
 						<SkeletonCard />
 					</div>
 				</div>
+			</template>
 
-			    <!-- Error -->
-				<div v-else-if="ui.errors.weather">❌</div>
+			<!-- Error -->
+			<template #error>
+				<div class="text-red-500 text-sm">❌ Failed to load weather data.</div>
+			</template>
 
-				<!-- Weather Details -->
-				<div v-else class="base-container bg-ay-lavender space-y-2 text-sm">
+			<!-- Data -->
+			<template #default>
+
+				<div class="base-container bg-ay-lavender space-y-2 text-sm">
 
 					<!-- Condition -->
 					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
-						<img class="image-sm mb-2" :src="getWeatherIconUrl(weather.weathercode)" alt="Weather icon">
+						<img class="image-sm mb-2" :src="getWeatherIconUrl(weather.weathercode)" alt="Weather icon" />
 						<span class="text-xs">{{ weatherDescription }}</span>
 					</div>
 
 					<!-- Temperature -->
 					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
 						<div class="flex mb-2">
-							<img :src="termometerIcon" alt="Thermometer Icon" class="image-sm">
+							<img :src="termometerIcon" alt="Thermometer Icon" class="image-sm" />
 							<img :src="getTemperatureIconUrl(weather.temperature)" alt="Temperature Icon" class="image-sm" />
 						</div>
 						<span class="text-xs">{{ weather.temperature }}°C</span>
@@ -46,9 +49,9 @@
 
 				</div>
 
-			</div>
-
-		</transition>
+			</template>
+			
+		</FetchStateWrapper>
 
 	</div>
 
@@ -60,8 +63,9 @@
 import { ref, watch, computed, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 
-import SkeletonCard from "./SkeletonCard.vue";
-import { getDistance } from "../utils/geolocation";
+import FetchStateWrapper from "@/components/FetchStateWrapper.vue";
+import SkeletonCard from "@/components/SkeletonCard.vue";
+import { getDistance } from "@/utils/geolocation";
 
 import { useUserLocationStore } from "@/stores/userLocationStore";
 import { useUIStore } from "@/stores/uiStore";

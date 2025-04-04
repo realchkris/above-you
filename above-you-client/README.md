@@ -4,7 +4,7 @@
 A minimal yet interactive frontend offering a smooth, responsive user experience.
 
 ## 🏗️ Tech Stack
-- **Vue.js** — Reactive UI framework
+- **Vue.js + Pinia** — Reactive UI framework
 - **Leaflet** — Interactive map rendering
 - **TailwindCSS** — Utility-first styling
 

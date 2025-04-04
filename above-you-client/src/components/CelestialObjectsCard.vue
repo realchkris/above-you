@@ -3,33 +3,33 @@
 
 	<div class="flex flex-col items-center text-center">
 
-		<transition name="fade" mode="out-in">
+		<FetchStateWrapper :loading="ui.loading.celestial" :error="ui.errors.celestial">
 
-			<!-- Key changes based on state -->
-			<div :key="ui.loading.celestial ? 'loading' : ui.errors.celestial ? 'error' : 'data'" class="w-full flex items-center justify-center">
-
-				<!-- Loading -->
-				<div v-if="ui.loading.celestial" class="space-y-3 w-3/5">
+			<!-- Loading -->
+			<template #loading>
+				<div class="space-y-3 w-3/5">
 					<SkeletonCard />
 				</div>
+			</template>
 
-				<!-- Error -->
-				<div v-else-if="ui.errors.celestial">❌</div>
+			<!-- Error -->
+			<template #error>
+				<div class="text-red-500">❌ Failed to load celestial data.</div>
+			</template>
 
-				<!-- List -->
-				<ul v-else class="space-y-2">
+			<!-- Default (Data) -->
+			<template #default>
 
+				<ul class="space-y-2">
 					<li
-						v-for="(object, index) in celestialObjects"
-						:key="object.name || index"
-						class="base-container bg-ay-purple-light"
+					v-for="(object, index) in celestialObjects"
+					:key="object.name || index"
+					class="base-container bg-ay-purple-light"
 					>
-
 						<div class="flex flex-wrap items-center gap-4 justify-between">
-
 							<!-- Icon + Name -->
 							<div class="flex items-center gap-2 min-w-[120px]">
-								<img :src="getCelestialIconUrl(object.name)" :alt="`${object.name} Icon`" class="image-sm">
+								<img :src="getCelestialIconUrl(object.name)" :alt="`${object.name} Icon`" class="image-sm" />
 								<div class="font-semibold">{{ object.name ?? "–" }}</div>
 							</div>
 
@@ -48,16 +48,13 @@
 									<span>{{ object.magnitude ?? "–" }}</span>
 								</div>
 							</div>
-
 						</div>
-
 					</li>
-
 				</ul>
+				
+			</template>
 
-			</div>
-
-		</transition>
+		</FetchStateWrapper>
 
 		<p v-if="!ui.loading.celestial && celestialObjects.length === 0 && !ui.errors.celestial" class="text-sm text-gray-400">
 			No visible celestial objects right now
@@ -72,8 +69,9 @@
 import { ref, watch, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 
-import { getDistance } from "../utils/geolocation";
-import SkeletonCard from "./SkeletonCard.vue";
+import { getDistance } from "@/utils/geolocation";
+import SkeletonCard from "@/components/SkeletonCard.vue";
+import FetchStateWrapper from "@/components/FetchStateWrapper.vue";
 
 import { useUserLocationStore } from "@/stores/userLocationStore";
 import { useUIStore } from "@/stores/uiStore";

@@ -14,7 +14,7 @@ Designed for security, simplicity, and centralized control.
 - [✔️] **ISS Location API** — Returns current ISS position
 - [✔️] **Weather & Celestial Proxy** — Routes to AstronomyAPI + Open-Meteo
 - [🚧] **CORS Control via ENV** — Fine-tuned domain restriction
-- [   ] **Auth Middleware** — For future user authentication
+- [🚧] **Auth Middleware** — For future user authentication
 
 ## 🔧 Available Endpoints
 | Method | Endpoint                                    | Description |

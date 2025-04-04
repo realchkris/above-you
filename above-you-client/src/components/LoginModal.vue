@@ -86,16 +86,34 @@
 
 import { ref, onMounted, onBeforeUnmount } from "vue";
 
+import { storeToRefs } from "pinia";
+import { useAuthStore } from '@/stores/authStore';
+import { useUIStore } from "@/stores/uiStore";
+
+const auth = useAuthStore();
+const ui = useUIStore();
+
 const emit = defineEmits(["close"]);
 
 const email = ref("");
 const password = ref("");
 const mode = ref("login");
 
-function submit() {
-	console.log(`${mode.value} →`, { email: email.value, password: password.value });
-// Emit form data or call your auth composable/store here
-	emit("close");
+async function submit() {
+
+	try {
+
+		if (mode.value === 'login') {
+			await auth.login(email.value, password.value);
+		} else {
+			await auth.register(email.value, password.value);
+		}
+		emit("close");
+
+	} catch (err) {
+		console.error("Auth error:", err.response?.data || err.message);
+		// Error already handled by ui store
+	}
 }
 
 function emitClose() {
@@ -114,12 +132,3 @@ onMounted(() => window.addEventListener("keydown", handleEscape));
 onBeforeUnmount(() => window.removeEventListener("keydown", handleEscape));
 
 </script>
-
-<style scoped>
-.input-field {
-	width: 100%;
-	padding: 0.5rem;
-	border: 1px solid #ddd;
-	border-radius: 0.375rem;
-}
-</style>

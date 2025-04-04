@@ -26,7 +26,6 @@ export function getWeatherDescription(code) {
 	return weatherCodeMap[code] || "Unknown";
 }
 
-// Map simplified icon names — group multiple codes into categories
 export function getWeatherIcon(code) {
 	if ([0, 1].includes(code)) return "clear.png";
 	if ([2, 3].includes(code)) return "cloudy.png";
@@ -38,10 +37,10 @@ export function getWeatherIcon(code) {
 	return "unknown.png";
 }
 
-// Icon imports (only works in setup context)
 const icons = import.meta.glob("../assets/weather/*.png", {
 	eager: true,
-	as: "url",
+	import: 'default',
+	query: '?url'
 });
 
 export function getWeatherIconUrl(code) {

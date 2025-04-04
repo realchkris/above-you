@@ -2,55 +2,62 @@
 <template>
 
 	<!-- Reverse Geocoded User Location -->
-	<transition name="fade" mode="out-in">
-		<div
-		:key="ui.loading.location ? 'loading' : ui.errors.location ? 'error' : 'data'"
-		class="base-container bg-ay-dark text-white mb-4 w-full max-w-xs flex justify-center items-center"
-		>
+	<FetchStateWrapper
+		:loading="ui.loading.location"
+		:error="ui.errors.location"
+	>
 
-		<!-- Skeleton Loader -->
-		<template v-if="ui.loading.location">
-			<SkeletonCard class="h-6 w-3/5" />
-		</template>
-
-		<!-- Error -->
-		<template v-else-if="ui.errors.location">
-			<span>❌</span>
-		</template>
-
-		<!-- Data -->
-		<template v-else>
-			<div class="flex flex-col items-center gap-1 text-center w-full break-words whitespace-pre-wrap px-4">
-				<img :src="youIcon" class="image-sm" />
-				<span>{{ userLocation }}</span>
+		<!-- Loading -->
+		<template #loading>
+			<div class="base-container bg-ay-dark text-white mb-4 w-full max-w-xs flex justify-center items-center">
+				<SkeletonCard class="h-6 w-3/5" />
 			</div>
 		</template>
 
-		</div>
-	</transition>
+		<!-- Error -->
+		<template #error>
+			<div class="base-container bg-ay-dark text-white mb-4 w-full max-w-xs flex justify-center items-center">
+				<span>❌</span>
+			</div>
+		</template>
+
+		<!-- Data -->
+		<template #default>
+			<div class="base-container bg-ay-dark text-white mb-4 w-full max-w-xs flex justify-center items-center">
+				<div class="flex flex-col items-center gap-1 text-center w-full break-words whitespace-pre-wrap px-4">
+					<img :src="youIcon" class="image-sm" />
+					<span>{{ userLocation }}</span>
+				</div>
+			</div>
+		</template>
+
+	</FetchStateWrapper>
 
 	<!-- Live Coordinates -->
-	<transition name="fade" mode="out-in">
-		<div
-			:key="ui.loading.coordinates ? 'loading' : ui.errors.coordinates ? 'error' : 'data'"
-			class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4"
-		>
+	<FetchStateWrapper
+		:loading="ui.loading.coordinates"
+		:error="ui.errors.coordinates"
+	>
 
-			<!-- Skeleton Loader -->
-			<template v-if="ui.loading.coordinates">
+		<!-- Loading -->
+		<template #loading>
+			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4">
 				<SkeletonCard class="h-12 w-16" />
 				<SkeletonCard class="h-12 w-16" />
-			</template>
+			</div>
+		</template>
 
-			<!-- Error -->
-			<template v-else-if="ui.errors.coordinates">
+		<!-- Error -->
+		<template #error>
+			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4">
 				<span>❌</span>
-			</template>
+			</div>
+		</template>
 
-			<!-- Data -->
-			<template v-else>
+		<!-- Data -->
+		<template #default>
+			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4">
 				<div class="flex gap-4">
-
 					<!-- Latitude -->
 					<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] break-words">
 						<span class="text-xs">Lat</span>
@@ -62,12 +69,11 @@
 						<span class="text-xs">Lon</span>
 						<span class="text-sm text-center truncate">{{ userCoordinates.lon.toFixed(5) ?? "–" }}</span>
 					</div>
-
 				</div>
-			</template>
+			</div>
+		</template>
 
-		</div>
-	</transition>
+	</FetchStateWrapper>
 
 	<!-- Map -->
 	<div class="map-container relative">
@@ -91,8 +97,10 @@ import { ref, onMounted, nextTick } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-import { getDistance } from "../utils/geolocation.js";
-import SkeletonCard from './SkeletonCard.vue';
+import { getDistance } from "@/utils/geolocation.js";
+
+import SkeletonCard from "@/components/SkeletonCard.vue";
+import FetchStateWrapper from "@/components/FetchStateWrapper.vue";
 
 import { storeToRefs } from "pinia";
 import { useUserLocationStore } from "@/stores/userLocationStore";
@@ -145,7 +153,7 @@ async function fetchReverseGeocode(lat, lon) {
 
 	try {
 
-		const res = await fetch(`${API_BASE_URL}/api/reverse-geocode?lat=${lat}&lon=${lon}`);
+		const res = await fetch(`${API_BASE_URL}/api/geocode?lat=${lat}&lon=${lon}`);
 		const data = await res.json();
 
 		if (data.error) throw new Error(data.error);

@@ -12,10 +12,24 @@
 		<!-- Above You Logo -->
 		<img class="image-sm" src="../assets/ay_logo.png">
 
-		<!-- Login Icon -->
-		<button class="round-button bg-ay-lavender hover:bg-ay-purple" @click="toggleModal">
-			<img class="icon-button icon-md" src="../assets/login.png">
-		</button>
+		<!-- Login / Logout Section -->
+		<transition name="fade" mode="out-in">
+			<div :key="isLoggedIn ? 'logout' : 'login'" class="flex items-center gap-2">
+
+				<!-- Show if logged in -->
+				<div v-if="isLoggedIn" class="flex items-center gap-2">
+					<button class="round-button bg-ay-lavender hover:bg-ay-purple" @click="auth.logout">
+						<img class="icon-button icon-sm" src="../assets/logout.png">
+					</button>
+				</div>
+
+				<!-- Show if not logged in -->
+				<button v-else class="round-button bg-ay-lavender hover:bg-ay-purple" @click="toggleModal">
+					<img class="icon-button icon-md" src="../assets/login.png">
+				</button>
+
+			</div>
+		</transition>
 
 		<!-- Login Modal -->
 		<transition name="fade">
@@ -28,13 +42,17 @@
 
 <script setup>
 
+import { ref, computed } from 'vue';
 import LoginModal from './LoginModal.vue';
-import { ref } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
 
+const auth = useAuthStore();
 const showModal = ref(false);
 
-function toggleModal() {
-  showModal.value = true;
-}
+const toggleModal = () => {
+	showModal.value = true;
+};
+
+const isLoggedIn = computed(() => !!auth.token);
 
 </script>

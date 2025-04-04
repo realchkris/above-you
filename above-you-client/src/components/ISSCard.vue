@@ -4,38 +4,32 @@
 	<div class="flex flex-col items-center text-center">
 
 		<!-- ISS Location -->
-		<transition name="fade" mode="out-in">
+		<FetchStateWrapper :loading="ui.loading.iss" :error="ui.errors.iss">
 
-			<div
-				:key="ui.loading.iss ? 'loading' : ui.errors.iss ? 'error' : 'data'"
-				class="flex flex-col items-center space-y-2"
-			>
-
-				<!-- Loading -->
-				<div v-if="ui.loading.iss" class="flex flex-col items-center gap-3 w-full">
-					<!-- Wrap everything inside a full-width container -->
+			<!-- Loading -->
+			<template #loading>
+				<div class="flex flex-col items-center gap-3 w-full">
 					<div class="w-full flex flex-col items-center gap-3">
-
-						<!-- Row of Lat & Lon skeletons -->
 						<div class="flex gap-3 w-full">
 							<SkeletonCard class="h-16 flex-1" />
 							<SkeletonCard class="h-16 flex-1" />
 						</div>
-
-						<!-- Distance Skeleton -->
 						<SkeletonCard class="h-16 w-1/2" />
 					</div>
 				</div>
+			</template>
 
-				<!-- Error -->
-				<div v-else-if="ui.errors.iss">❌</div>
+			<!-- Error -->
+			<template #error>
+				<div class="text-red-500 text-sm">❌ Failed to load ISS location</div>
+			</template>
 
-				<!-- Data -->
-				<div v-else class="flex flex-col items-center space-y-2">
+			<!-- Data -->
+			<template #default>
+				<div class="flex flex-col items-center space-y-2">
 
 					<!-- ISS Coordinates -->
 					<div class="flex gap-3 justify-center">
-
 						<div class="base-container bg-ay-teal flex flex-col items-center">
 							<span class="text-xs">Lat</span>
 							<span>{{ issCoordinates.lat ?? "–" }}</span>
@@ -45,7 +39,6 @@
 							<span class="text-xs">Lon</span>
 							<span>{{ issCoordinates.lon ?? "–" }}</span>
 						</div>
-
 					</div>
 
 					<!-- Distance -->
@@ -60,10 +53,9 @@
 					</div>
 
 				</div>
-				
-			</div>
-
-		</transition>
+			</template>
+			
+		</FetchStateWrapper>
 
 	</div>
 </template>
@@ -73,8 +65,10 @@
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 
-import SkeletonCard from "./SkeletonCard.vue";
-import { getDistance } from "../utils/geolocation.js";
+import SkeletonCard from "@/components/SkeletonCard.vue";
+import FetchStateWrapper from "@/components/FetchStateWrapper.vue";
+
+import { getDistance } from "@/utils/geolocation.js";
 
 import { useUserLocationStore } from "@/stores/userLocationStore";
 import { useUIStore } from "@/stores/uiStore";
@@ -96,17 +90,18 @@ const FETCH_INTERVAL = parseInt(import.meta.env.VITE_ISS_FETCH_INTERVAL || "1500
 const issCoordinates = ref({ lat: null, lon: null });
 const distanceToISS = ref("–");
 
+const hasFetchedOnce = ref(false);
 const hasCalculatedDistance = ref(false);
 
 // Fetch ISS location
 async function fetchISSCoordinates() {
 
-	ui.setLoading("iss", true);
+	if (!hasFetchedOnce.value) ui.setLoading("iss", true);
 	ui.clearError("iss");
 
 	try {
 
-		const res = await fetch(`${API_BASE_URL}/api/iss-flyover`);
+		const res = await fetch(`${API_BASE_URL}/api/iss`);
 		const data = await res.json();
 
 		if (!data.latitude || !data.longitude || isNaN(data.latitude)) {
@@ -117,6 +112,8 @@ async function fetchISSCoordinates() {
 			lat: parseFloat(data.latitude),
 			lon: parseFloat(data.longitude),
 		};
+
+		hasFetchedOnce.value = true;
 
 	} catch (err) {
 		console.error("[ISS API]", err);
