@@ -1,29 +1,28 @@
 # 🎨 Above You — Frontend
 
 ## 🌌 Overview
-Minimal frontend offering an intuitive and responsive user experience.
+A minimal yet interactive frontend offering a smooth, responsive user experience.
 
 ## 🏗️ Tech Stack
-- **Vue.js** – Reactive UI framework
-- **Leaflet** – Interactive maps & geolocation
-- **TailwindCSS** – Styling & animations
+- **Vue.js** — Reactive UI framework
+- **Leaflet** — Interactive map rendering
+- **TailwindCSS** — Utility-first styling
 
 ## ⚙️ Core Features (+ Progress)
-- [✔️] **Core UI Layout** – Header, dashboard, and component structure
-- [✔️] **Live Map Tracking** – User location via Leaflet + OSM Reverse Geocoding
-- [✔️] **Real-Time ISS Tracking** – Fetches ISS location and calculates distance
-- [🚧] **Performance Optimization** – Reduce API calls, improve load times
-- [🚧] **Refined Error Handling** – Centralized alerts instead of browser popups
-- [🚧] **Improved UX/UI** – Better animations, loading indicators
-- [   ] **Local Storage Caching** - User location & other data gets saved in localStorage to avoid unnecessary API calls
-- [🚧] **Weather & Celestial Data** – Integration with external APIs
+- [✔️] **UI Layout** — Header, dashboard, reusable component system
+- [✔️] **Live Map Tracking** — User geolocation with Leaflet + OpenStreetMap
+- [✔️] **Real-Time ISS Tracking** — Live position & distance to International Space Station
+- [✔️] **Weather & Celestial Integration** — Astronomy + Open-Meteo APIs
+- [✔️] **Performance Optimization** — Efficient polling & smart thresholds
+- [🚧] **Refined UX** — Loading indicators, animations, transitions
+- [   ] **Local Storage Caching** — Save user location & reduce requests
 
-## 🔜 Upcoming features
+## 🔜 Upcoming Features
+- [   ] **User Authentication** — Login & preferences
+- [   ] **Custom Location Search** — View sky anywhere in the world
 - [   ] **Dark Mode Support**
-- [   ] **Authentication System** – User can make an account
-- [   ] **Custom Location Selection** – Check sky conditions anywhere by saving your favorite locations
 
-## 🗺️ Map & Geolocation Handling
-- **Real-time Tracking** – Uses navigator.geolocation.watchPosition()
-- **Efficient API Calls** – Backend proxy for OSM Reverse Geocoding
-- **Distance Calculation** – Haversine Formula to optimize updates
+## 🗺️ Geolocation & Mapping
+- Uses `navigator.geolocation.watchPosition()`
+- Backend proxy for reverse geocoding (OSM)
+- Haversine-based distance calculation

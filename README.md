@@ -1,19 +1,18 @@
 # ☝️ Above You
 
 ## 👓 Introduction
-A work-in-progress web application that provides real-time information on **celestial objects**, **weather conditions**, and **ISS flyovers** given the user's location.
+A work-in-progress web application that provides real-time information on **celestial objects**, **weather conditions**, and **International Space Station flyovers** based on the user's geolocation.
 
 ## 🚩 Project Scope
 
-Core Features (MVP):
-- Detect user location using the Geolocation API.
-- Fetch and display real-time weather and sky visibility data using Open-Meteo API.
-- Retrieve and display visible celestial objects from AstronomyAPI.
-- Show ISS flyover times based on location using WhereTheISS.at API.
+### Core Features (MVP):
+- Detect user location using Geolocation and track it real-time.
+- Fetch and display real-time weather and sky visibility data via Open-Meteo.
+- Retrieve and display visible celestial objects via AstronomyAPI.
+- Show ISS flyover times using the WhereTheISS.at API.
 
-
-Optional Features:
-- Allow users to save locations to check sky conditions elsewhere.
-- Implement a basic backend (Node.js + Express) to store user preferences.
-- User authentication.
-- Data visualization for past sky conditions.
+### Optional Features:
+- Save locations to check sky conditions elsewhere.
+- Add backend (Node.js + Express) to store user preferences.
+- Implement user authentication.
+- Visualize historical sky data.
