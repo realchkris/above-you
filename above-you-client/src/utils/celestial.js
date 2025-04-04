@@ -14,7 +14,8 @@ const celestialIconMap = {
 
 const icons = import.meta.glob("../assets/celestial/*.png", {
 	eager: true,
-	as: "url",
+	import: 'default',
+	query: '?url'
 });
 
 export function getCelestialIconUrl(name) {

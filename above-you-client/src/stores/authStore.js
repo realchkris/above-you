@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useUIStore } from './uiStore';
 
 export const useAuthStore = defineStore('auth', () => {
-
 	const user = ref(null);
 	const token = ref(localStorage.getItem('auth_token') || null);
 	const ui = useUIStore();
 
-	async function login(email, password) {
+	const isLoggedIn = computed(() => !!token.value);
 
+	async function login(email, password) {
 		ui.setLoading('auth', true);
 		ui.clearError('auth');
 
@@ -25,11 +25,9 @@ export const useAuthStore = defineStore('auth', () => {
 		} finally {
 			ui.setLoading('auth', false);
 		}
-
 	}
 
 	async function register(email, password) {
-
 		ui.setLoading('auth', true);
 		ui.clearError('auth');
 
@@ -44,7 +42,6 @@ export const useAuthStore = defineStore('auth', () => {
 		} finally {
 			ui.setLoading('auth', false);
 		}
-
 	}
 
 	function logout() {
@@ -56,9 +53,9 @@ export const useAuthStore = defineStore('auth', () => {
 	return {
 		user,
 		token,
+		isLoggedIn,
 		login,
 		register,
 		logout
 	};
-
 });

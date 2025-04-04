@@ -14,10 +14,10 @@
 
 		<!-- Login / Logout Section -->
 		<transition name="fade" mode="out-in">
-			<div :key="isLoggedIn ? 'logout' : 'login'" class="flex items-center gap-2">
+			<div :key="auth.isLoggedIn ? 'logout' : 'login'" class="flex items-center gap-2">
 
 				<!-- Show if logged in -->
-				<div v-if="isLoggedIn" class="flex items-center gap-2">
+				<div v-if="auth.isLoggedIn" class="flex items-center gap-2">
 					<button class="round-button bg-ay-lavender hover:bg-ay-purple" @click="auth.logout">
 						<img class="icon-button icon-sm" src="../assets/logout.png">
 					</button>
@@ -52,7 +52,5 @@ const showModal = ref(false);
 const toggleModal = () => {
 	showModal.value = true;
 };
-
-const isLoggedIn = computed(() => !!auth.token);
 
 </script>
