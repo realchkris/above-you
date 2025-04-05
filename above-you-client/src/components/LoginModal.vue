@@ -37,7 +37,7 @@
 					@click="mode = 'register'"
 					:class="{ 'bg-ay-teal font-bold text-black': mode === 'register' }"
 				>
-					Register
+					Sign Up
 				</button>
 			</div>
 
@@ -71,7 +71,7 @@
 					type="submit"
 					class="primary-button py-3 text-base font-semibold w-full mx-auto"
 				>
-					{{ mode === 'login' ? 'Login' : 'Register' }}
+					{{ mode === 'login' ? 'Login' : 'Sign Up' }}
 				</button>
 
 			</form>

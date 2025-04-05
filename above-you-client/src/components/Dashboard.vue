@@ -49,15 +49,15 @@
 
 <script setup>
 
-import WeatherCard from './WeatherCard.vue'
-import CelestialObjectsCard from './CelestialObjectsCard.vue'
-import ISSCard from './ISSCard.vue'
-import MapCard from './MapCard.vue'
-import CollapsibleCard from './CollapsibleCard.vue';
+import WeatherCard from '@/components/WeatherCard.vue'
+import CelestialObjectsCard from '@/components/CelestialObjectsCard.vue'
+import ISSCard from '@/components/ISSCard.vue'
+import MapCard from '@/components/MapCard.vue'
+import CollapsibleCard from '@/components/CollapsibleCard.vue';
 
-import weatherIcon from '../assets/weather.png';
-import celestialObjectsIcon from '../assets/comet.png';
-import ISSIcon from '../assets/iss.png';
+import weatherIcon from '@/assets/weather.png';
+import celestialObjectsIcon from '@/assets/comet.png';
+import ISSIcon from '@/assets/iss.png';
 
 import { ref } from "vue";
 

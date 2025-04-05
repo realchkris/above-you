@@ -43,7 +43,7 @@
 <script setup>
 
 import { ref, computed } from 'vue';
-import LoginModal from './LoginModal.vue';
+import LoginModal from '@/components/LoginModal.vue';
 import { useAuthStore } from '@/stores/authStore';
 
 const auth = useAuthStore();

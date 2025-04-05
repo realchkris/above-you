@@ -73,7 +73,7 @@ import { getWeatherDescription, getWeatherIconUrl } from "@/utils/weatherCodes";
 import { getTemperatureIconUrl } from "@/utils/temperature";
 import { getWindIconUrl } from "@/utils/wind";
 
-import termometerIcon from "../assets/temperature/thermometer.png";
+import termometerIcon from "@/assets/temperature/thermometer.png";
 
 // Stores
 const locationStore = useUserLocationStore();

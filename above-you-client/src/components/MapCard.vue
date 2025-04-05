@@ -106,7 +106,7 @@ import { storeToRefs } from "pinia";
 import { useUserLocationStore } from "@/stores/userLocationStore";
 import { useUIStore } from "@/stores/uiStore";
 
-import youIcon from '../assets/you.png';
+import youIcon from '@/assets/you.png';
 
 // Stores
 const locationStore = useUserLocationStore();

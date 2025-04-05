@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
+import { extractErrorMessage } from '@/utils/errorHelpers'
 
 export const useUIStore = defineStore('ui', () => {
 
@@ -10,11 +11,12 @@ export const useUIStore = defineStore('ui', () => {
 	const globalError = ref(null)
 
 	// Set a specific error for a module
-	function setError(module, message) {
+	function setError(module, err, fallback = 'Something went wrong') {
+		const message = extractErrorMessage(err, fallback);
 		errors[module] = message;
 		globalError.value = message;
 
-		// Optional: auto-clear after 5 seconds
+		// Auto-clear after 5s
 		setTimeout(() => {
 			if (globalError.value === message) {
 				globalError.value = null;

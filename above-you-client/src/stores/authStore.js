@@ -1,12 +1,15 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import axios from 'axios';
-import { useUIStore } from './uiStore';
+import { useUIStore } from '@/stores/uiStore';
+import { extractErrorMessage } from '@/utils/errorHelpers';
 
 export const useAuthStore = defineStore('auth', () => {
+
   const user = ref(null);
   const token = ref(localStorage.getItem('auth_token') || null);
   const ui = useUIStore();
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const isLoggedIn = computed(() => !!token.value);
 
@@ -22,11 +25,13 @@ export const useAuthStore = defineStore('auth', () => {
     ui.clearError('auth');
 
     try {
-      const res = await axios.post('/api/auth/login', { email, password });
+      const res = await axios.post(`${BASE_URL}/api/auth/login`, { email, password });
       setUserState(res.data.user, res.data.token);
     } catch (err) {
-      ui.setError('auth', err.response?.data?.error || 'Login failed');
+
+      ui.setError('auth', extractErrorMessage(err, 'Login failed'));
       throw err;
+
     } finally {
       ui.setLoading('auth', false);
     }
@@ -37,11 +42,13 @@ export const useAuthStore = defineStore('auth', () => {
     ui.clearError('auth');
 
     try {
-      const res = await axios.post('/api/auth/register', { email, password });
+      const res = await axios.post(`${BASE_URL}/api/auth/register`, { email, password });
       setUserState(res.data.user, res.data.token);
     } catch (err) {
-      ui.setError('auth', err.response?.data?.error || 'Registration failed');
+
+      ui.setError('auth', extractErrorMessage(err, 'Sign Up failed'));
       throw err;
+
     } finally {
       ui.setLoading('auth', false);
     }
@@ -61,4 +68,5 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     logout,
   };
+
 });

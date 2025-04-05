@@ -13,12 +13,12 @@
 					<div class="w-full flex flex-col items-center gap-3">
 
 						<div class="flex gap-3 justify-center w-full">
-							<SkeletonCard class="h-16 w-[96px]" />
-							<SkeletonCard class="h-16 w-[96px]" />
+							<SkeletonCard class="h-16 w-12" />
+							<SkeletonCard class="h-16 w-12" />
 						</div>
 
 						<div class="w-full flex justify-center">
-							<SkeletonCard class="h-16 w-[96px]" />
+							<SkeletonCard class="h-16 w-20" />
 						</div>
 
 					</div>
