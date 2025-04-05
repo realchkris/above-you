@@ -35,9 +35,18 @@ exports.register = async (req, res) => {
 			[email, password_hash]
 		);
 
+		const user = result.rows[0];
+
+		// Generate a JWT token
+		const token = jwt.sign(
+			{ userId: user.id, email: user.email },
+			process.env.JWT_SECRET,
+			{ expiresIn: '1d' }
+		);
+
 		console.log('User registered:', result.rows[0]);
 
-		res.status(201).json(result.rows[0]);
+		res.json({ token, user: { id: user.id, email: user.email } });
 
 	} catch (err) {
 		console.error('Error in /register:', err);
@@ -85,7 +94,11 @@ exports.login = async (req, res) => {
 		}
 
 		// Generate a JWT token
-		const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
+		const token = jwt.sign(
+			{ userId: user.id, email: user.email },
+			process.env.JWT_SECRET,
+			{ expiresIn: '1d' }
+		);
 		console.log('User logged in:', user.email);
 
 		res.json({ token, user: { id: user.id, email: user.email } });

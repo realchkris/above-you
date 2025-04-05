@@ -1,5 +1,3 @@
-<!-- PURPOSE: Modal for sign up/login -->
-
 <template>
 
 	<!-- Modal Overlay -->
@@ -7,7 +5,6 @@
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20"
 		@click.self="closeOnOutside"
 	>
-
 		<!-- Modal Container -->
 		<div class="base-container bg-ay-dark p-4 w-full max-w-xs relative">
 
@@ -66,13 +63,20 @@
 					/>
 				</div>
 
-				<!-- Submit Button -->
-				<button
-					type="submit"
-					class="primary-button py-3 text-base font-semibold w-full mx-auto"
-				>
-					{{ mode === 'login' ? 'Login' : 'Sign Up' }}
-				</button>
+				<!-- Submit Button or Skeleton Loader -->
+				<transition name="fade" mode="out-in">
+				  <div v-if="ui.loading.auth" class="w-full flex justify-center">
+				    <SkeletonCard class="h-12 w-48" />
+				  </div>
+
+				  <button
+				    v-else
+				    type="submit"
+				    class="primary-button py-3 font-semibold w-full mx-auto"
+				  >
+				    {{ mode === 'login' ? 'Login' : 'Sign Up' }}
+				  </button>
+				</transition>
 
 			</form>
 
@@ -84,11 +88,12 @@
 
 <script setup>
 
-import { ref, onMounted, onBeforeUnmount } from "vue";
-
+import { ref, onMounted, onBeforeUnmount, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from '@/stores/authStore';
 import { useUIStore } from "@/stores/uiStore";
+
+import SkeletonCard from "@/components/SkeletonCard.vue";
 
 const auth = useAuthStore();
 const ui = useUIStore();
@@ -101,6 +106,11 @@ const mode = ref("login");
 
 async function submit() {
 
+	// Prevent multiple submits by checking ui loading state
+	if (ui.loading.auth) return;
+
+	ui.setLoading("auth", true); // Set loading state to true for auth
+
 	try {
 
 		if (mode.value === 'login') {
@@ -108,12 +118,17 @@ async function submit() {
 		} else {
 			await auth.register(email.value, password.value);
 		}
-		emit("close");
+
+		// Wait until Vue updates DOM/reactivity
+		await nextTick();
+		setTimeout(() => emit("close"), 50);
 
 	} catch (err) {
 		console.error("Auth error:", err.response?.data || err.message);
-		// Error already handled by ui store
+	} finally {
+		ui.setLoading("auth", false); // Set loading state to false after the request is finished
 	}
+
 }
 
 function emitClose() {
