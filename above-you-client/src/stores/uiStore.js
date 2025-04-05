@@ -12,11 +12,16 @@ export const useUIStore = defineStore('ui', () => {
 
 	// Set a specific error for a module
 	function setError(module, err, fallback = 'Something went wrong') {
+		// Only set the error if there's a real error or if we have a valid message
 		const message = extractErrorMessage(err, fallback);
-		errors[module] = message;
-		globalError.value = message;
 
-		// Auto-clear after 5s
+		// If the message is different from the previous one, update the error
+		if (message && message !== errors[module]) {
+			errors[module] = message;
+			globalError.value = message;
+		}
+
+		// Auto-clear after 5s if the error is not a persistent one
 		setTimeout(() => {
 			if (globalError.value === message) {
 				globalError.value = null;

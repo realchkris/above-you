@@ -35,7 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
 			const res = await axios.post(`${BASE_URL}/api/auth/login`, { email, password });
 			setUserState(res.data.user, res.data.token);
 		} catch (err) {
-			ui.setError('auth', extractErrorMessage(err, 'Login failed'));
+			ui.setError('auth', extractErrorMessage(err, '❌ Login failed.'));
 			throw err;
 		} finally {
 			ui.setLoading('auth', false);
@@ -50,7 +50,7 @@ export const useAuthStore = defineStore('auth', () => {
 			const res = await axios.post(`${BASE_URL}/api/auth/register`, { email, password });
 			setUserState(res.data.user, res.data.token);
 		} catch (err) {
-			ui.setError('auth', extractErrorMessage(err, 'Sign Up failed'));
+			ui.setError('auth', extractErrorMessage(err, '❌ Sign Up failed.'));
 			throw err;
 		} finally {
 			ui.setLoading('auth', false);

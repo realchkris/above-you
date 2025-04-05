@@ -164,7 +164,7 @@ async function fetchReverseGeocode(lat, lon) {
 	} catch (error) {
 
 		console.warn("[Reverse Geocode]", error);
-		ui.setError("location", "❌ Unable to retrieve location");
+		ui.setError("location", "❌ Unable to retrieve location.");
 		lastReverseGeocodeFailed = true;
 		return "❌";
 
