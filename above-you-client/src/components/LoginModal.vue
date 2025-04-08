@@ -20,6 +20,11 @@
 			<!-- Title -->
 			<h2 class="text-xl font-semibold mb-4 text-center">Welcome</h2>
 
+			<!-- Info Box -->
+			<div class="base-container text-xs bg-yellow-200 text-black text-center m-3">
+				⚠️ This is a demo. <br> Your data is <strong>temporary</strong> and may be <strong>deleted</strong> periodically. <br> Feel free to use a mock email.
+			</div>
+
 			<!-- Toggle -->
 			<div class="flex justify-center gap-2 mb-5">
 				<button
