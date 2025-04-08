@@ -5,12 +5,12 @@
 	<header class="header-container">
 
 		<!-- Navbar Button -->
-		<button class="round-button bg-ay-lavender hover:bg-ay-purple">
-			<img class="icon-button icon-sm" src="../assets/navbar.png">
+		<button class="round-button bg-ay-lavender hover:bg-ay-purple" aria-label="Open navigation">
+			<Menu class="icon-button icon-sm" aria-hidden="true" />
 		</button>
 
 		<!-- Above You Logo -->
-		<img class="image-sm" src="../assets/ay_logo.png">
+		<img class="image-sm" :src="logo" alt="Above You Logo" />
 
 		<!-- Login / Logout Section -->
 		<transition name="fade" mode="out-in">
@@ -18,14 +18,14 @@
 
 				<!-- Show if logged in -->
 				<div v-if="auth.isLoggedIn" class="flex items-center gap-2">
-					<button class="round-button bg-ay-lavender hover:bg-ay-purple" @click="auth.logout">
-						<img class="icon-button icon-sm" src="../assets/logout.png">
+					<button class="round-button bg-ay-lavender hover:bg-ay-purple" aria-label="Open navigation" @click="auth.logout">
+						<LogOut class="icon-button icon-sm" aria-hidden="true" />
 					</button>
 				</div>
 
 				<!-- Show if not logged in -->
-				<button v-else class="round-button bg-ay-lavender hover:bg-ay-purple" @click="toggleModal">
-					<img class="icon-button icon-md" src="../assets/login.png">
+				<button v-else class="round-button bg-ay-lavender hover:bg-ay-purple" aria-label="Open navigation" @click="toggleModal">
+					<LogIn class="icon-button icon-sm" aria-hidden="true" />
 				</button>
 
 			</div>
@@ -42,15 +42,18 @@
 
 <script setup>
 
-import { ref, computed } from 'vue';
-import LoginModal from '@/components/LoginModal.vue';
-import { useAuthStore } from '@/stores/authStore';
+	import { LogOut, LogIn, Menu } from 'lucide-vue-next';
+	import logo from '@/assets/ay_logo.png';
 
-const auth = useAuthStore();
-const showModal = ref(false);
+	import { ref, computed } from 'vue';
+	import LoginModal from '@/components/LoginModal.vue';
+	import { useAuthStore } from '@/stores/authStore';
 
-const toggleModal = () => {
-	showModal.value = true;
-};
+	const auth = useAuthStore();
+	const showModal = ref(false);
+
+	const toggleModal = () => {
+		showModal.value = true;
+	};
 
 </script>
