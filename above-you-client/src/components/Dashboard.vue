@@ -1,49 +1,47 @@
 <!-- PURPOSE: Main UI showing weather, celestial data, and ISS flyover times. -->
 <template>
+  <div class="grid gap-4 lg:grid-cols-[2fr_1.5fr]">
 
-	<div class="grid grid-cols-1 gap-4">
+    <!-- MAP COLUMN -->
+    <div class="base-container bg-ay-lavender h-full">
+      <MapCard />
+    </div>
 
-		<section class="dashboard-container grid grid-cols-1 gap-4">
+    <!-- DATA COLUMN -->
+    <div class="flex flex-col gap-4">
 
-			<!-- Weather Card -->
-			<CollapsibleCard
-				title="Weather"
-				:icon="weatherIcon"
-			>
-				<div class="base-container bg-ay-dark text-white">
-					<WeatherCard />
-				</div>
-			</CollapsibleCard>
+      <!-- Weather + ISS (side by side) -->
+      <div class="flex gap-4">
 
-			<!-- Celestial Objects Card -->
-			<CollapsibleCard
-				title="Celestial Objects"
-				bgColor="bg-ay-purple"
-				:icon="celestialObjectsIcon"
-			>
-				<div class="base-container bg-ay-purple text-white">
-					<CelestialObjectsCard />
-				</div>
-			</CollapsibleCard>
+        <div class="flex-1">
+          <CollapsibleCard title="Weather" :icon="weatherIcon">
+            <div class="base-container bg-ay-dark text-white">
+              <WeatherCard />
+            </div>
+          </CollapsibleCard>
+        </div>
 
-			<!-- ISS Tracker Card -->
-			<CollapsibleCard
-				title="International Space Station"
-				bgColor="bg-ay-green"
-				:icon="ISSIcon"
-			>
-				<div class="base-container bg-ay-green text-white w-full">
-					<ISSCard />
-				</div>
-			</CollapsibleCard>
+        <div class="flex-1">
+          <CollapsibleCard title="International Space Station" bgColor="bg-ay-green" :icon="ISSIcon">
+            <div class="base-container bg-ay-green text-white">
+              <ISSCard />
+            </div>
+          </CollapsibleCard>
+        </div>
+      </div>
 
-		</section>
+      <!-- Celestial Full Width -->
+      <div>
+        <CollapsibleCard title="Celestial Objects" bgColor="bg-ay-purple" :icon="celestialObjectsIcon">
+          <div class="base-container bg-ay-purple text-white">
+            <CelestialObjectsCard />
+          </div>
+        </CollapsibleCard>
+      </div>
 
-		<section class="base-container bg-ay-lavender w-full">
-			<MapCard />
-		</section>
-		
-	</div>
+    </div>
+    
+  </div>
 
 </template>
 

@@ -9,21 +9,21 @@
 
 		<!-- Loading -->
 		<template #loading>
-			<div class="base-container bg-ay-dark text-white mb-4 w-full max-w-xs flex justify-center items-center">
+			<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
 				<SkeletonCard class="h-6 w-3/5" />
 			</div>
 		</template>
 
 		<!-- Error -->
 		<template #error>
-			<div class="base-container bg-ay-dark text-white mb-4 w-full max-w-xs flex justify-center items-center">
+			<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
 				<span>❌</span>
 			</div>
 		</template>
 
 		<!-- Data -->
 		<template #default>
-			<div class="base-container bg-ay-dark text-white mb-4 w-full max-w-xs flex justify-center items-center">
+			<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
 				<div class="flex flex-col items-center gap-1 text-center w-full break-words whitespace-pre-wrap px-4">
 					<img :src="youIcon" class="image-sm" />
 					<span>{{ userLocation }}</span>
