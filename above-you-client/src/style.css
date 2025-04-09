@@ -63,6 +63,23 @@ button:focus-visible {
 	outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* GRADIENTS */
+.ay-gradient-lavender {
+	background: linear-gradient(180deg, rgba(129,124,141,1) 0%, rgba(73,68,84,1) 100%);
+}
+
+.ay-gradient-dark {
+	background: linear-gradient(180deg, rgba(73,68,84,1) 0%, rgba(21,18,28,1) 100%);
+}
+
+.ay-gradient-green {
+	background: linear-gradient(180deg, rgba(0,126,88,1) 0%, rgba(0,62,30,1) 100%);
+}
+
+.ay-gradient-purple {
+	background: linear-gradient(180deg, rgba(96,79,214,1) 0%, rgba(36,24,180,1) 100%);
+}
+
 /* BACKGROUND COLORS */
 .bg-ay-purple {
 	background-color: theme('colors.ayPurple');
@@ -72,8 +89,16 @@ button:focus-visible {
 	background-color: theme('colors.ayPurpleLight');
 }
 
+.bg-ay-purple-deep {
+	background-color: theme('colors.ayPurpleDeep');
+}
+
 .bg-ay-dark {
 	background-color: theme('colors.ayDark');
+}
+
+.bg-ay-darker {
+	background-color: theme('colors.ayDarker');
 }
 
 .bg-ay-lavender {
@@ -83,6 +108,10 @@ button:focus-visible {
 
 .bg-ay-green {
 	background-color: theme('colors.ayGreen');
+}
+
+.bg-ay-green-deep {
+	background-color: theme('colors.ayGreenDeep');
 }
 
 .bg-ay-teal {
@@ -103,7 +132,7 @@ button:focus-visible {
 }
 
 .header-container {
-	@apply bg-ay-dark p-4 w-screen flex justify-between fixed top-0 left-0 z-50;
+	@apply ay-gradient-dark p-4 w-screen flex justify-between fixed top-0 left-0 z-50;
 }
 
 .error-container {

@@ -1,6 +1,6 @@
 <template>
 
-	<div class="w-screen h-screen bg-black">
+	<div class="w-screen h-screen bg-ay-darker">
 
 		<!-- Header -->
 		<Header />

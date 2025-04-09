@@ -12,26 +12,27 @@
 			<CollapsibleCard
 				title="Weather"
 				:icon="weatherIcon"
+				bgColor="ay-gradient-lavender"
 			>
-				<WeatherCard class="bg-ay-dark text-white base-container w-full h-full" />
+				<WeatherCard class="ay-gradient-lavender text-white base-container w-full h-full" />
 			</CollapsibleCard>
 
 			<!-- ISS -->
 			<CollapsibleCard
 				title="International Space Station"
 				:icon="ISSIcon"
-				bgColor="bg-ay-green"
+				bgColor="ay-gradient-green"
 			>
-				<ISSCard class="bg-ay-green text-white base-container w-full h-full" />
+				<ISSCard class="ay-gradient-green text-white base-container w-full h-full" />
 			</CollapsibleCard>
 
 			<!-- Celestial Objects -->
 			<CollapsibleCard
 				title="Celestial Objects"
 				:icon="celestialObjectsIcon"
-				bgColor="bg-ay-purple"
+				bgColor="ay-gradient-purple"
 			>
-				<CelestialObjectsCard class="bg-ay-purple text-white base-container w-full h-full" />
+				<CelestialObjectsCard class="ay-gradient-purple text-white base-container w-full h-full" />
 			</CollapsibleCard>
 
 		</div>
