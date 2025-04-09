@@ -1,43 +1,41 @@
 <!-- PURPOSE: Main UI showing weather, celestial data, and ISS flyover times. -->
 <template>
-	<div class="grid gap-4 lg:grid-cols-[2fr_1.5fr] h-full p-4">
+	<div class="grid gap-4 lg:grid-cols-[2fr_1.5fr] p-4 w-full h-full">
 
 		<!-- MAP COLUMN -->
-		<div class="bg-red-500 h-full flex">
-			<MapCard class="flex-1" />
-		</div>
+		<MapCard class="w-full h-full" />
 
 		<!-- DATA COLUMN -->
-		<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-4 w-full h-full min-h-0 overflow-x-hidden">
 
-			<!-- Weather + ISS (side by side) -->
-			<div class="flex gap-4">
+			<!-- Weather -->
+			<CollapsibleCard
+				title="Weather"
+				:icon="weatherIcon"
+				class="w-full"
+			>
+				<WeatherCard class="bg-ay-dark text-white base-container w-full" />
+			</CollapsibleCard>
 
-				<div class="flex-1">
-					<CollapsibleCard title="Weather" :icon="weatherIcon">
-						<div class="base-container bg-ay-dark text-white">
-							<WeatherCard />
-						</div>
-					</CollapsibleCard>
-				</div>
+			<!-- ISS -->
+			<CollapsibleCard
+				title="International Space Station"
+				:icon="ISSIcon"
+				bgColor="bg-ay-green"
+				class="w-full"
+			>
+				<ISSCard class="bg-ay-green text-white base-container w-full" />
+			</CollapsibleCard>
 
-				<div class="flex-1">
-					<CollapsibleCard title="International Space Station" bgColor="bg-ay-green" :icon="ISSIcon">
-						<div class="base-container bg-ay-green text-white">
-							<ISSCard />
-						</div>
-					</CollapsibleCard>
-				</div>
-			</div>
-
-			<!-- Celestial Full Width -->
-			<div>
-				<CollapsibleCard title="Celestial Objects" bgColor="bg-ay-purple" :icon="celestialObjectsIcon">
-					<div class="base-container bg-ay-purple text-white">
-						<CelestialObjectsCard />
-					</div>
-				</CollapsibleCard>
-			</div>
+			<!-- Celestial Objects -->
+			<CollapsibleCard
+				title="Celestial Objects"
+				:icon="celestialObjectsIcon"
+				bgColor="bg-ay-purple"
+				class="w-full"
+			>
+				<CelestialObjectsCard class="bg-ay-purple text-white base-container w-full h-full" />
+			</CollapsibleCard>
 
 		</div>
 		

@@ -1,7 +1,7 @@
 <!-- PURPOSE: Shows the map and the user's real-time position. -->
 <template>
 
-	<div class="flex flex-col h-full w-full">
+	<div class="flex flex-col w-full h-full">
 
 		<!-- Reverse Geocoded User Location -->
 		<FetchStateWrapper
@@ -11,22 +11,22 @@
 
 			<!-- Loading -->
 			<template #loading>
-				<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
-					<SkeletonCard class="h-6 w-3/5" />
+				<div class="base-container bg-ay-dark text-white mb-4 flex justify-center items-center w-full">
+					<SkeletonCard class="min-h-16 w-full" />
 				</div>
 			</template>
 
 			<!-- Error -->
 			<template #error>
-				<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
+				<div class="base-container bg-ay-dark text-white mb-4 flex justify-center items-center w-full">
 					<span>❌</span>
 				</div>
 			</template>
 
 			<!-- Data -->
 			<template #default>
-				<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
-					<div class="flex flex-col items-center gap-1 text-center w-full break-words whitespace-pre-wrap px-4">
+				<div class="base-container bg-ay-dark text-white mb-4 flex justify-center items-center w-full">
+					<div class="flex flex-col items-center gap-2 text-center w-full break-words whitespace-pre-wrap px-4">
 						<img :src="youIcon" class="image-sm" />
 						<span>{{ userLocation }}</span>
 					</div>
@@ -43,31 +43,31 @@
 
 			<!-- Loading -->
 			<template #loading>
-				<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
-					<SkeletonCard class="h-12 w-16" />
-					<SkeletonCard class="h-12 w-16" />
+				<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4">
+					<SkeletonCard class="min-h-16 w-full" />
+					<SkeletonCard class="min-h-16 w-full" />
 				</div>
 			</template>
 
 			<!-- Error -->
 			<template #error>
-				<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
+				<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4">
 					<span>❌</span>
 				</div>
 			</template>
 
 			<!-- Data -->
 			<template #default>
-				<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
-					<div class="flex gap-3">
+				<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-4 w-full">
+					<div class="flex gap-4 w-full">
 						<!-- Latitude -->
-						<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] break-words">
+						<div class="base-container bg-ay-lavender flex flex-col items-center break-words w-full">
 							<span class="text-xs">Lat</span>
 							<span class="text-sm text-center truncate">{{ userCoordinates.lat.toFixed(5) ?? "–" }}</span>
 						</div>
 
 						<!-- Longitude -->
-						<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] break-words">
+						<div class="base-container bg-ay-lavender flex flex-col items-center break-words w-full">
 							<span class="text-xs">Lon</span>
 							<span class="text-sm text-center truncate">{{ userCoordinates.lon.toFixed(5) ?? "–" }}</span>
 						</div>
@@ -78,16 +78,16 @@
 		</FetchStateWrapper>
 
 		<!-- Map -->
-		<div class="flex flex-col h-full w-full">
+		<div class="grow w-full h-full">
 		
 			<transition name="fade" mode="out-in">
 				<SkeletonCard
 				v-if="ui.loading.map"
-				class="absolute top-0 left-0 w-full h-full z-10 rounded"
+				class="absolute top-0 left-0 rounded z-10 w-full h-full"
 				/>
 			</transition>
 
-			<div id="map" class="h-full w-full z-0"></div>
+			<div id="map" class="z-0 w-full h-full"></div>
 
 		</div>
 

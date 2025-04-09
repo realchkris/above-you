@@ -7,10 +7,10 @@
 
 		<!-- Main Dashboard content (Adjusts dynamically to header height) -->
 		<main
-		class="w-full h-screen"
+		class="w-full h-full"
 		:style="{ paddingTop: headerHeight + 'px' }"
 		>
-			<div class="h-full">
+			<div class="w-full h-full">
 				<Dashboard />
 			</div>
 		</main>

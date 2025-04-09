@@ -1,16 +1,20 @@
 <!-- PURPOSE: Displays visible celestial bodies. -->
 <template>
 
-	<div class="flex flex-col items-center text-center">
+	<div class="text-center w-full h-full">
 
-		<FetchStateWrapper :loading="ui.loading.celestial" :error="ui.errors.celestial">
+		<FetchStateWrapper
+		:loading="ui.loading.celestial"
+		:error="ui.errors.celestial"
+		:fullHeight="true"
+		>
 
 			<!-- Loading -->
 			<template #loading>
-				<div class="flex flex-col gap-3 items-center w-full">
-					<SkeletonCard class="h-16 w-48" />
-					<SkeletonCard class="h-16 w-48" />
-					<SkeletonCard class="h-16 w-48" />
+				<div class="flex flex-col gap-4 items-center w-full">
+					<SkeletonCard class="min-h-16 w-full" />
+					<SkeletonCard class="min-h-16 w-full" />
+					<SkeletonCard class="min-h-16 w-full" />
 				</div>
 			</template>
 
@@ -22,39 +26,43 @@
 			<!-- Default (Data) -->
 			<template #default>
 
-				<ul class="space-y-2">
-					<li
-					v-for="(object, index) in celestialObjects"
-					:key="object.name || index"
-					class="base-container bg-ay-purple-light"
-					>
-						<div class="flex flex-wrap items-center gap-4 justify-between">
+				<div class="overflow-y-auto h-full w-full">
+					<ul class="space-y-4">
+						<li
+						v-for="(object, index) in celestialObjects"
+						:key="object.name || index"
+						class="base-container bg-ay-purple-light"
+						>
+						<div class="flex-grow items-center justify-between">
+
 							<!-- Icon + Name -->
-							<div class="flex items-center gap-2 min-w-[120px]">
+							<div class="flex items-center gap-4">
 								<img :src="getCelestialIconUrl(object.name)" :alt="`${object.name} Icon`" class="image-sm" />
 								<div class="font-semibold">{{ object.name ?? "–" }}</div>
 							</div>
 
 							<!-- Celestial object details -->
-							<div class="flex flex-wrap justify-center gap-3 w-full">
-								<div class="base-container bg-ay-purple flex-1 flex flex-col items-center min-w-[90px]">
+							<div class="flex gap-4 mt-4">
+								<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
 									<span class="text-xs">Alt</span>
 									<span>{{ object.altitude != null ? object.altitude.toFixed(1) : "–" }}°</span>
 								</div>
-								<div class="base-container bg-ay-purple flex-1 flex flex-col items-center min-w-[90px]">
+								<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
 									<span class="text-xs">Az</span>
 									<span>{{ object.azimuth != null ? object.azimuth.toFixed(1) : "–" }}°</span>
 								</div>
-								<div class="base-container bg-ay-purple flex-1 flex flex-col items-center min-w-[90px]">
+								<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
 									<span class="text-xs">Mag</span>
 									<span>{{ object.magnitude ?? "–" }}</span>
 								</div>
 							</div>
+
 						</div>
 					</li>
 				</ul>
-				
-			</template>
+			</div>
+
+		</template>
 
 		</FetchStateWrapper>
 

@@ -1,16 +1,17 @@
 <!-- PURPOSE: Shows temperature, wind, and general condition -->
 <template>
 
-	<div class="flex flex-col items-center text-center">
+	<!-- Root: allow full width, center text only -->
+	<div class="w-full text-center">
 
 		<FetchStateWrapper :loading="ui.loading.weather" :error="ui.errors.weather">
 
 			<!-- Loading -->
 			<template #loading>
-				<div class="flex flex-col gap-3 items-center w-full">
-					<SkeletonCard class="h-16 w-48" />
-					<SkeletonCard class="h-16 w-48" />
-					<SkeletonCard class="h-16 w-48" />
+				<div class="flex flex-col gap-4 w-full">
+					<SkeletonCard class="min-h-16 w-full" />
+					<SkeletonCard class="min-h-16 w-full" />
+					<SkeletonCard class="min-h-16 w-full" />
 				</div>
 			</template>
 
@@ -22,33 +23,31 @@
 			<!-- Data -->
 			<template #default>
 
-				<div class="base-container bg-ay-lavender space-y-2 text-sm">
+				<div class="flex flex-col gap-4 w-full">
 
 					<!-- Condition -->
-					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
-						<img class="image-sm mb-2" :src="getWeatherIconUrl(weather.weathercode)" alt="Weather icon" />
+					<div class="base-container bg-ay-lavender flex items-center justify-center gap-2">
+						<img class="image-sm" :src="getWeatherIconUrl(weather.weathercode)" alt="Weather Icon" />
 						<span class="text-xs">{{ weatherDescription }}</span>
 					</div>
 
 					<!-- Temperature -->
-					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
-						<div class="flex mb-2">
-							<img :src="termometerIcon" alt="Thermometer Icon" class="image-sm" />
-							<img :src="getTemperatureIconUrl(weather.temperature)" alt="Temperature Icon" class="image-sm" />
-						</div>
+					<div class="base-container bg-ay-lavender flex items-center justify-center gap-2">
+						<img :src="termometerIcon" alt="Thermometer Icon" class="image-sm" />
+						<img :src="getTemperatureIconUrl(weather.temperature)" alt="Temperature Icon" class="image-sm" />
 						<span class="text-xs">{{ weather.temperature }}°C</span>
 					</div>
 
 					<!-- Wind -->
-					<div class="base-container bg-ay-dark flex flex-col items-center text-white">
-						<img class="image-sm mb-2" :src="getWindIconUrl(weather.windspeed)" alt="Wind icon" />
+					<div class="base-container bg-ay-lavender flex items-center justify-center gap-2">
+						<img class="image-sm" :src="getWindIconUrl(weather.windspeed)" alt="Wind Icon" />
 						<span>{{ weather.windspeed }} km/h @ {{ weather.winddirection }}°</span>
 					</div>
 
 				</div>
 
 			</template>
-			
+
 		</FetchStateWrapper>
 
 	</div>

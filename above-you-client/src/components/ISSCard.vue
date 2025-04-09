@@ -1,30 +1,23 @@
 <!-- PURPOSE: Shows the International Space Station (ISS) location and calculates the ISS - user distance in real time. -->
 <template>
-	<div class="flex flex-col items-center text-center">
+	<div class="w-full text-center">
 
-		<!-- ISS Location -->
 		<FetchStateWrapper :loading="ui.loading.iss" :error="ui.errors.iss">
 
 			<!-- Loading -->
 			<template #loading>
+				<div class="flex flex-col gap-4 w-full">
 
-				<div class="flex flex-col items-center w-full gap-3">
+					<div class="flex justify-center gap-4 w-full">
+						<SkeletonCard class="min-h-16 w-full" />
+						<SkeletonCard class="min-h-16 w-full" />
+					</div>
 
-					<div class="w-full flex flex-col items-center gap-3">
-
-						<div class="flex gap-3 justify-center w-full">
-							<SkeletonCard class="h-16 w-12" />
-							<SkeletonCard class="h-16 w-12" />
-						</div>
-
-						<div class="w-full flex justify-center">
-							<SkeletonCard class="h-16 w-20" />
-						</div>
-
+					<div class="flex justify-center w-full">
+						<SkeletonCard class="min-h-16 w-full" />
 					</div>
 
 				</div>
-
 			</template>
 
 			<!-- Error -->
@@ -34,27 +27,27 @@
 
 			<!-- Data -->
 			<template #default>
-				<div class="flex flex-col items-center space-y-2">
+				<div class="flex flex-col items-center gap-4">
 
 					<!-- ISS Coordinates -->
-					<div class="flex gap-3 justify-center">
-						<div class="base-container bg-ay-teal flex flex-col items-center">
+					<div class="flex gap-4 w-full">
+						<div class="base-container bg-ay-teal flex flex-col items-center flex-1">
 							<span class="text-xs">Lat</span>
 							<span>{{ issCoordinates.lat ?? "–" }}</span>
 						</div>
 
-						<div class="base-container bg-ay-teal flex flex-col items-center">
+						<div class="base-container bg-ay-teal flex flex-col items-center flex-1">
 							<span class="text-xs">Lon</span>
 							<span>{{ issCoordinates.lon ?? "–" }}</span>
 						</div>
 					</div>
 
 					<!-- Distance -->
-					<div class="base-container bg-ay-teal">
+					<div class="base-container bg-ay-teal flex flex-col items-center w-full">
 						<span class="text-xs">🛰️ — 👤</span>
-						<div>
+						<div class="w-full">
 							<span v-if="ui.loading.issDistance">
-								<SkeletonCard class="h-16 w-20" />
+								<SkeletonCard class="min-h-16 w-full" />
 							</span>
 							<span v-else>{{ distanceToISS ?? "–" }}</span>
 						</div>
@@ -62,7 +55,7 @@
 
 				</div>
 			</template>
-			
+
 		</FetchStateWrapper>
 
 	</div>
