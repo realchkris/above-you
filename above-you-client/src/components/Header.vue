@@ -1,5 +1,4 @@
 <!-- PURPOSE: Displays app title, navigation, and dark mode toggle. -->
-
 <template>
 
 	<header class="header-container">
