@@ -1,10 +1,10 @@
 <!-- PURPOSE: Main UI showing weather, celestial data, and ISS flyover times. -->
 <template>
-	<div class="grid gap-4 lg:grid-cols-[2fr_1.5fr] h-full">
+	<div class="grid gap-4 lg:grid-cols-[2fr_1.5fr] h-full p-4">
 
 		<!-- MAP COLUMN -->
-		<div class="base-container no-padding bg-ay-lavender h-full flex">
-		  <MapCard class="flex-1 h-full" />
+		<div class="bg-red-500 h-full flex">
+			<MapCard class="flex-1" />
 		</div>
 
 		<!-- DATA COLUMN -->

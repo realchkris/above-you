@@ -2,10 +2,15 @@
 
 	<div class="w-screen h-screen bg-black">
 
+		<!-- Header -->
 		<Header />
-		
-		<main class="w-full" :style="{ paddingTop: headerHeight + 'px' }">
-			<div class="mt-4">
+
+		<!-- Main Dashboard content (Adjusts dynamically to header height) -->
+		<main
+		class="w-full h-screen"
+		:style="{ paddingTop: headerHeight + 'px' }"
+		>
+			<div class="h-full">
 				<Dashboard />
 			</div>
 		</main>

@@ -1,91 +1,95 @@
 <!-- PURPOSE: Shows the map and the user's real-time position. -->
 <template>
 
-	<!-- Reverse Geocoded User Location -->
-	<FetchStateWrapper
-		:loading="ui.loading.location"
-		:error="ui.errors.location"
-	>
+	<div class="flex flex-col h-full w-full">
 
-		<!-- Loading -->
-		<template #loading>
-			<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
-				<SkeletonCard class="h-6 w-3/5" />
-			</div>
-		</template>
+		<!-- Reverse Geocoded User Location -->
+		<FetchStateWrapper
+			:loading="ui.loading.location"
+			:error="ui.errors.location"
+		>
 
-		<!-- Error -->
-		<template #error>
-			<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
-				<span>❌</span>
-			</div>
-		</template>
-
-		<!-- Data -->
-		<template #default>
-			<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
-				<div class="flex flex-col items-center gap-1 text-center w-full break-words whitespace-pre-wrap px-4">
-					<img :src="youIcon" class="image-sm" />
-					<span>{{ userLocation }}</span>
+			<!-- Loading -->
+			<template #loading>
+				<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
+					<SkeletonCard class="h-6 w-3/5" />
 				</div>
-			</div>
-		</template>
+			</template>
 
-	</FetchStateWrapper>
+			<!-- Error -->
+			<template #error>
+				<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
+					<span>❌</span>
+				</div>
+			</template>
 
-	<!-- Live Coordinates -->
-	<FetchStateWrapper
-		:loading="ui.loading.coordinates"
-		:error="ui.errors.coordinates"
-	>
-
-		<!-- Loading -->
-		<template #loading>
-			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
-				<SkeletonCard class="h-12 w-16" />
-				<SkeletonCard class="h-12 w-16" />
-			</div>
-		</template>
-
-		<!-- Error -->
-		<template #error>
-			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
-				<span>❌</span>
-			</div>
-		</template>
-
-		<!-- Data -->
-		<template #default>
-			<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
-				<div class="flex gap-3">
-					<!-- Latitude -->
-					<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] break-words">
-						<span class="text-xs">Lat</span>
-						<span class="text-sm text-center truncate">{{ userCoordinates.lat.toFixed(5) ?? "–" }}</span>
-					</div>
-
-					<!-- Longitude -->
-					<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] break-words">
-						<span class="text-xs">Lon</span>
-						<span class="text-sm text-center truncate">{{ userCoordinates.lon.toFixed(5) ?? "–" }}</span>
+			<!-- Data -->
+			<template #default>
+				<div class="base-container bg-ay-dark text-white mb-4 w-full flex justify-center items-center">
+					<div class="flex flex-col items-center gap-1 text-center w-full break-words whitespace-pre-wrap px-4">
+						<img :src="youIcon" class="image-sm" />
+						<span>{{ userLocation }}</span>
 					</div>
 				</div>
-			</div>
-		</template>
+			</template>
 
-	</FetchStateWrapper>
+		</FetchStateWrapper>
 
-	<!-- Map -->
-	<div class="map-container flex flex-col h-full w-full relative">
-		<transition name="fade" mode="out-in">
-			<SkeletonCard
+		<!-- Live Coordinates -->
+		<FetchStateWrapper
+			:loading="ui.loading.coordinates"
+			:error="ui.errors.coordinates"
+		>
+
+			<!-- Loading -->
+			<template #loading>
+				<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
+					<SkeletonCard class="h-12 w-16" />
+					<SkeletonCard class="h-12 w-16" />
+				</div>
+			</template>
+
+			<!-- Error -->
+			<template #error>
+				<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
+					<span>❌</span>
+				</div>
+			</template>
+
+			<!-- Data -->
+			<template #default>
+				<div class="base-container bg-ay-dark text-white mb-4 p-2 flex justify-center gap-3">
+					<div class="flex gap-3">
+						<!-- Latitude -->
+						<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] break-words">
+							<span class="text-xs">Lat</span>
+							<span class="text-sm text-center truncate">{{ userCoordinates.lat.toFixed(5) ?? "–" }}</span>
+						</div>
+
+						<!-- Longitude -->
+						<div class="base-container bg-ay-lavender flex flex-col items-center max-w-[100px] break-words">
+							<span class="text-xs">Lon</span>
+							<span class="text-sm text-center truncate">{{ userCoordinates.lon.toFixed(5) ?? "–" }}</span>
+						</div>
+					</div>
+				</div>
+			</template>
+
+		</FetchStateWrapper>
+
+		<!-- Map -->
+		<div class="flex flex-col h-full w-full">
+		
+			<transition name="fade" mode="out-in">
+				<SkeletonCard
 				v-if="ui.loading.map"
 				class="absolute top-0 left-0 w-full h-full z-10 rounded"
-			/>
-		</transition>
+				/>
+			</transition>
 
-		<!-- Always rendered to prevent init issues -->
-		<div id="map" class="z-0"></div>
+			<div id="map" class="h-full w-full z-0"></div>
+
+		</div>
 
 	</div>
 
