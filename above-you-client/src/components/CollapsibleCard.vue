@@ -1,10 +1,10 @@
 <template>
+	<div :class="['w-full', { 'flex-grow': !isOpen }]"> <!-- Apply flex-grow only when the card is closed -->
 
-	<div class="w-full">
-
+		<!-- Apply h-full only when the card is closed -->
 		<div
 			class="base-container text-white flex items-center justify-between cursor-pointer"
-			:class="bgColor"
+			:class="[bgColor, {'h-full': !isOpen}]"
 			@click="isOpen = !isOpen"
 		>
 
@@ -24,18 +24,17 @@
 
 		<transition name="fade">
 			<div
-			v-if="isOpen"
-			class="mt-4 w-full">
+				v-if="isOpen"
+				class="mt-4 w-full">
 				<slot />
 			</div>
 		</transition>
-		
-	</div>
+
+	</div> <!-- End of the collapsible card container -->
 
 </template>
 
 <script setup>
-
 import { ref } from "vue";
 
 const props = defineProps({
@@ -52,5 +51,4 @@ const props = defineProps({
 });
 
 const isOpen = ref(props.initiallyOpen);
-
 </script>
