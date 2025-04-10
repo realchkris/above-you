@@ -1,12 +1,12 @@
 <!-- PURPOSE: Main UI showing weather, celestial data, and ISS flyover times. -->
 <template>
-	<div class="grid gap-4 lg:grid-cols-[2fr_1.5fr] p-4 w-full h-full">
+	<div class="grid gap-4 lg:grid-cols-[2fr_1.5fr] p-4 w-full h-auto md:h-full">
 
 		<!-- MAP COLUMN -->
 		<MapCard class="w-full h-full" />
 
 		<!-- DATA COLUMN -->
-		<div class="flex flex-col gap-4 w-full h-full min-h-0 overflow-x-hidden">
+		<div class="flex flex-col gap-4 min-h-0 overflow-x-hidden w-full h-full">
 
 			<!-- Weather -->
 			<CollapsibleCard
@@ -40,7 +40,6 @@
 	</div>
 
 </template>
-
 
 <script setup>
 

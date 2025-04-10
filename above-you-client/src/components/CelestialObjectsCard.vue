@@ -26,41 +26,42 @@
 			<!-- Default (Data) -->
 			<template #default>
 
-				<div class="overflow-y-auto h-full w-full">
+				<div class="h-auto md:h-full md:overflow-y-auto w-full">
+				<!-- <div class="overflow-y-auto h-full w-full"> -->
 					<ul class="space-y-4">
 						<li
 						v-for="(object, index) in celestialObjects"
 						:key="object.name || index"
 						class="base-container bg-ay-purple-light"
 						>
-						<div class="flex-grow items-center justify-between">
+							<div class="flex-grow items-center justify-between">
 
-							<!-- Icon + Name -->
-							<div class="flex items-center gap-4">
-								<img :src="getCelestialIconUrl(object.name)" :alt="`${object.name} Icon`" class="image-sm" />
-								<div class="font-semibold">{{ object.name ?? "–" }}</div>
+								<!-- Icon + Name -->
+								<div class="flex items-center gap-4">
+									<img :src="getCelestialIconUrl(object.name)" :alt="`${object.name} Icon`" class="image-sm" />
+									<div class="font-semibold">{{ object.name ?? "–" }}</div>
+								</div>
+
+								<!-- Celestial object details -->
+								<div class="flex gap-4 mt-4">
+									<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
+										<span class="text-xs">Alt</span>
+										<span>{{ object.altitude != null ? object.altitude.toFixed(1) : "–" }}°</span>
+									</div>
+									<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
+										<span class="text-xs">Az</span>
+										<span>{{ object.azimuth != null ? object.azimuth.toFixed(1) : "–" }}°</span>
+									</div>
+									<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
+										<span class="text-xs">Mag</span>
+										<span>{{ object.magnitude ?? "–" }}</span>
+									</div>
+								</div>
+
 							</div>
-
-							<!-- Celestial object details -->
-							<div class="flex gap-4 mt-4">
-								<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
-									<span class="text-xs">Alt</span>
-									<span>{{ object.altitude != null ? object.altitude.toFixed(1) : "–" }}°</span>
-								</div>
-								<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
-									<span class="text-xs">Az</span>
-									<span>{{ object.azimuth != null ? object.azimuth.toFixed(1) : "–" }}°</span>
-								</div>
-								<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
-									<span class="text-xs">Mag</span>
-									<span>{{ object.magnitude ?? "–" }}</span>
-								</div>
-							</div>
-
-						</div>
-					</li>
-				</ul>
-			</div>
+						</li>
+					</ul>
+				</div>
 
 		</template>
 
