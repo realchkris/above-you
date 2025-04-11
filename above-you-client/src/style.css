@@ -142,6 +142,13 @@ button:focus-visible {
 	@apply transition-opacity duration-500 ease-in-out;
 }
 
+.success-container {
+	@apply base-container bg-ay-purple text-white font-bold text-center;
+	@apply p-2 flex items-center justify-center;
+	@apply fixed top-4 left-1/2 transform -translate-x-1/2 z-50;
+	@apply transition-opacity duration-500 ease-in-out;
+}
+
 /* IMAGE UTILITIES */
 .image-container {
 	@apply object-contain w-auto h-auto;
@@ -221,6 +228,25 @@ button:focus-visible {
 .fade-leave-to {
 	opacity: 0;
 	transform: translateY(-5px);
+}
+
+.slide-left-enter-active,
+.slide-left-leave-active {
+	transition: transform 0.3s ease;
+}
+.slide-left-enter-from,
+.slide-left-leave-to {
+	transform: translateX(-100%);
+}
+
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-right-enter-from,
+.slide-right-leave-to {
+  transform: translateX(100%);
 }
 
 /* LIGHT THEME OVERRIDES */

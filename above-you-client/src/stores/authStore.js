@@ -34,6 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
 		try {
 			const res = await axios.post(`${BASE_URL}/api/auth/login`, { email, password });
 			setUserState(res.data.user, res.data.token);
+			ui.setSuccess('auth', 'Logged In!');
 		} catch (err) {
 			ui.setError('auth', extractErrorMessage(err, '❌ Login failed.'));
 			throw err;
@@ -49,6 +50,7 @@ export const useAuthStore = defineStore('auth', () => {
 		try {
 			const res = await axios.post(`${BASE_URL}/api/auth/register`, { email, password });
 			setUserState(res.data.user, res.data.token);
+			ui.setSuccess('auth', 'Welcome!');
 		} catch (err) {
 			ui.setError('auth', extractErrorMessage(err, '❌ Sign Up failed.'));
 			throw err;
@@ -60,6 +62,32 @@ export const useAuthStore = defineStore('auth', () => {
 	function logout() {
 		token.value = null;
 		user.value = null;
+		ui.setSuccess('auth', 'Logged Out!');
+	}
+
+	async function deleteAccount() {
+		ui.setLoading('auth', true);
+		ui.clearError('auth');
+
+		console.log("here!!!");
+
+		try {
+			await axios.delete(`${BASE_URL}/api/protected/delete`, {
+				headers: {
+					Authorization: `Bearer ${token.value}`,
+				},
+			});
+
+			// Success: Handle successful deletion
+			logout();
+			ui.setSuccess('auth', '🗑️ Account successfully deleted.');
+
+		} catch (err) {
+			ui.setError('auth', extractErrorMessage(err, '❌ Account deletion failed.'));
+			throw err;
+		} finally {
+			ui.setLoading('auth', false);
+		}
 	}
 
 	return {
@@ -69,5 +97,6 @@ export const useAuthStore = defineStore('auth', () => {
 		login,
 		register,
 		logout,
+		deleteAccount,
 	};
 });
