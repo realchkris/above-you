@@ -6,7 +6,7 @@
 		@click.self="closeOnOutside"
 	>
 		<!-- Modal Container -->
-		<div class="base-container bg-ay-dark p-4 w-full max-w-xs relative">
+		<div class="base-container ay-gradient-dark p-4 w-full max-w-xs relative">
 
 			<!-- Close Button -->
 			<button
@@ -52,7 +52,10 @@
 					<input
 						v-model="email"
 						type="email"
-						class="primary-input w-full text-base py-3"
+						:class="[
+							'primary-input w-full text-base py-3',
+							mode === 'login' ? 'bg-ay-purple' : 'bg-ay-teal text-black'
+						]"
 						required
 					/>
 				</div>
@@ -63,7 +66,10 @@
 					<input
 						v-model="password"
 						type="password"
-						class="primary-input w-full text-base py-3"
+						:class="[
+							'primary-input w-full text-base py-3',
+							mode === 'login' ? 'bg-ay-purple' : 'bg-ay-teal text-black'
+						]"
 						required
 					/>
 				</div>
@@ -71,15 +77,18 @@
 				<!-- Submit Button or Skeleton Loader -->
 				<transition name="fade" mode="out-in">
 				  <div v-if="ui.loading.auth" class="w-full flex justify-center">
-				    <SkeletonCard class="h-12 w-48" />
+					<SkeletonCard class="h-12 w-48" />
 				  </div>
 
 				  <button
-				    v-else
-				    type="submit"
-				    class="primary-button py-3 font-semibold w-full mx-auto"
+					v-else
+					type="submit"
+					:class="[
+						'primary-button py-3 font-semibold w-full mx-auto',
+						mode === 'login' ? 'bg-ay-purple' : 'bg-ay-teal text-black'
+					]"
 				  >
-				    {{ mode === 'login' ? 'Login' : 'Sign Up' }}
+					{{ mode === 'login' ? 'Login' : 'Sign Up' }}
 				  </button>
 				</transition>
 

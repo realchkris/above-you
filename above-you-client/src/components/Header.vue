@@ -4,7 +4,11 @@
 	<header class="header-container">
 
 		<!-- Navbar Button -->
-		<button class="round-button bg-ay-lavender hover:bg-ay-purple" aria-label="Open navigation">
+		<button
+		class="round-button bg-ay-lavender hover:bg-ay-purple"
+		aria-label="Open navigation"
+		@click="showSidebar = true"
+		>
 			<Menu class="icon-button icon-sm" aria-hidden="true" />
 		</button>
 
@@ -35,6 +39,11 @@
 			<LoginModal v-if="showModal" @close="showModal = false" />
 		</transition>
 
+		<!-- Sidebar -->
+		<transition name="fade">
+			<Sidebar :open="showSidebar" @close="showSidebar = false" />
+		</transition>
+
 	</header>
 
 </template>
@@ -46,10 +55,12 @@
 
 	import { ref, computed } from 'vue';
 	import LoginModal from '@/components/LoginModal.vue';
+	import Sidebar from '@/components/Sidebar.vue'
 	import { useAuthStore } from '@/stores/authStore';
 
 	const auth = useAuthStore();
 	const showModal = ref(false);
+	const showSidebar = ref(false)
 
 	const toggleModal = () => {
 		showModal.value = true;
