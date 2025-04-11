@@ -97,39 +97,21 @@
 
 <script setup>
 
+// Imports
 import { ref, onMounted, nextTick, onBeforeUnmount } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { storeToRefs } from "pinia";
 
 import { getDistance } from "@/utils/geolocation.js";
-
 import SkeletonCard from "@/components/SkeletonCard.vue";
 import FetchStateWrapper from "@/components/FetchStateWrapper.vue";
-
-import { storeToRefs } from "pinia";
 import { useUserLocationStore } from "@/stores/userLocationStore";
 import { useUIStore } from "@/stores/uiStore";
-
 import youIcon from '@/assets/you.png';
 
-// Stores
-const locationStore = useUserLocationStore();
-const { userCoordinates, userLocation } = storeToRefs(locationStore);
-
-const ui = useUIStore();
-
-// Loading everything prematurely to avoid data divs showing up before skeleton loaders
-const loadingKeys = ["coordinates", "location", "map"];
-loadingKeys.forEach(key => ui.setLoading(key, true));
-
-// Internal refs
-const map = ref(null);
-
-// Static state
-let userMarker = null;
-let lastOSMCoords = null;
-let lastReverseGeocodeFailed = false;
-let watchPositionId = null;
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 // Constants
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -137,10 +119,6 @@ const GEO_TIMEOUT = parseInt(import.meta.env.VITE_GEOLOCATION_TIMEOUT || "15000"
 const MAXIMUM_AGE = parseInt(import.meta.env.VITE_GEOLOCATION_MAXIMUM_AGE || "30000", 10);
 const DISTANCE_THRESHOLD = parseInt(import.meta.env.VITE_GEOLOCATION_THRESHOLD || "100", 10);
 const RECENTER_THRESHOLD = 1000;
-
-// Fix Leaflet icon issue
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 const defaultIcon = L.icon({
 	iconUrl: markerIcon,
@@ -151,74 +129,46 @@ const defaultIcon = L.icon({
 	shadowSize: [41, 41],
 });
 
-// Reverse Geocoding
-async function fetchReverseGeocode(lat, lon) {
+// Store & State
+const locationStore = useUserLocationStore();
+const { userCoordinates, userLocation } = storeToRefs(locationStore);
+const ui = useUIStore();
 
-	ui.setLoading("location", true);
+const map = ref(null);
+let userMarker = null;
+let lastOSMCoords = null;
+let lastReverseGeocodeFailed = false;
+let watchPositionId = null;
+let isWatchingPosition = false;
 
-	try {
+const loadingKeys = ["coordinates", "location", "map"];
+loadingKeys.forEach(key => ui.setLoading(key, true));
 
-		const res = await fetch(`${API_BASE_URL}/api/geocode?lat=${lat}&lon=${lon}`);
-		const data = await res.json();
-
-		if (data.error) throw new Error(data.error);
-
-		lastOSMCoords = { lat, lon };
-		return data.display_name;
-
-	} catch (error) {
-
-		console.warn("[Reverse Geocode]", error);
-		ui.setError("location", "❌ Unable to retrieve location.");
-		lastReverseGeocodeFailed = true;
-		return "❌";
-
-	} finally {
-		ui.setLoading("location", false);
-	}
-
-}
-
-// Initialize Map
+// Map & Geolocation
 async function initializeMap() {
-
 	console.log("[Map] initializeMap called");
-
 	if (map.value) {
 		console.warn("[Map] Already initialized — skipping");
 		return;
 	}
 
-	console.log("[Map] Proceeding with map initialization...");
-
 	await nextTick();
 
 	map.value = L.map("map").setView([51.505, -0.09], 13);
-
 	L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 		attribution: '&copy; OpenStreetMap contributors',
 	}).addTo(map.value);
 
-	map.value.whenReady(() => {
-		setTimeout(() => ui.setLoading("map", false), 300);
-	});
-
+	map.value.whenReady(() => setTimeout(() => ui.setLoading("map", false), 300));
 	setTimeout(() => map.value.invalidateSize(), 300);
-
 }
 
-// Handle Geolocation
 async function handleGeolocationSuccess(pos) {
-
 	const lat = pos.coords.latitude;
 	const lon = pos.coords.longitude;
 
 	console.log("[Geo] Success! Lat:", lat, "Lon:", lon);
-
-	if (!lat || !lon || !map.value) {
-		console.warn("[Geo] Invalid position or map not ready.");
-	    return;
-	};
+	if (!lat || !lon || !map.value) return;
 
 	ui.setLoading("coordinates", false);
 	userCoordinates.value = { lat, lon };
@@ -239,34 +189,45 @@ async function handleGeolocationSuccess(pos) {
 	}
 
 	if (userMarker) {
-		console.log("[Geo] Updating marker position.");
 		userMarker.setLatLng([lat, lon]);
 	} else {
-		console.log("[Geo] Creating new user marker!");
 		userMarker = L.marker([lat, lon], { icon: defaultIcon }).addTo(map.value);
 	}
-
 }
 
 function handleGeolocationError(err) {
-
 	console.error("[Geolocation Error]:", err);
-
 	const messages = {
 		1: "❌ Location access denied.",
 		2: "⚠️ Location unavailable.",
 		3: "⏳ Request timed out.",
 	};
-
 	ui.setError("coordinates", messages[err.code] || "❓ Unknown location error.");
-
 }
 
-function setupGeolocation() {
-
+async function setupGeolocation() {
 	console.log("[Geo] Setting up geolocation...");
-
 	ui.setLoading("coordinates", true);
+
+	const permissionStatus = await navigator.permissions.query({ name: "geolocation" });
+	locationStore.locationPermission = permissionStatus.state;
+
+	if (["granted", "prompt"].includes(permissionStatus.state)) {
+		startGeolocationWatch();
+	} else {
+		ui.setError("coordinates", "❌ Location permission denied.");
+	}
+
+	permissionStatus.onchange = () => {
+		locationStore.locationPermission = permissionStatus.state;
+	};
+}
+
+function startGeolocationWatch() {
+	if (isWatchingPosition) {
+		console.warn("[Geo] Already watching position — skipping.");
+		return;
+	}
 
 	if (watchPositionId) {
 		navigator.geolocation.clearWatch(watchPositionId);
@@ -279,11 +240,31 @@ function setupGeolocation() {
 		{ enableHighAccuracy: true, maximumAge: MAXIMUM_AGE }
 	);
 
+	isWatchingPosition = true;
 	console.log("[Geo] Watch started, ID:", watchPositionId);
-	
 }
 
 // Utilities
+async function fetchReverseGeocode(lat, lon) {
+	ui.setLoading("location", true);
+
+	try {
+		const res = await fetch(`${API_BASE_URL}/api/geocode?lat=${lat}&lon=${lon}`);
+		const data = await res.json();
+		if (data.error) throw new Error(data.error);
+
+		lastOSMCoords = { lat, lon };
+		return data.display_name;
+	} catch (error) {
+		console.warn("[Reverse Geocode]", error);
+		ui.setError("location", "❌ Unable to retrieve location.");
+		lastReverseGeocodeFailed = true;
+		return "❌";
+	} finally {
+		ui.setLoading("location", false);
+	}
+}
+
 function shouldRecenterMap(lat, lon) {
 	if (!map.value) return false;
 	const center = map.value.getCenter();
@@ -303,15 +284,14 @@ onMounted(async () => {
 	setupGeolocation();
 });
 
-// Clearing the watchPosition calls & the map and their markers if the map component ever gets unmounted
 onBeforeUnmount(() => {
-
 	console.log("[Unmount] Cleaning up map and geolocation...");
 
 	if (watchPositionId) {
 		navigator.geolocation.clearWatch(watchPositionId);
 		console.log("[Unmount] Cleared geolocation watch");
 		watchPositionId = null;
+		isWatchingPosition = false;
 	}
 
 	if (map.value) {
@@ -320,7 +300,6 @@ onBeforeUnmount(() => {
 		map.value = null;
 		userMarker = null;
 	}
-	
 });
 
 window.addEventListener("resize", () => {
