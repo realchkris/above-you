@@ -224,6 +224,9 @@ async function setupGeolocation() {
 }
 
 function startGeolocationWatch() {
+
+	console.log("[Geo] startGeolocationWatch() called.");
+
 	if (isWatchingPosition) {
 		console.warn("[Geo] Already watching position — skipping.");
 		return;
