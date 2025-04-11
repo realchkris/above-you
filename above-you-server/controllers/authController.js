@@ -109,3 +109,19 @@ exports.login = async (req, res) => {
 	}
 
 };
+
+exports.delete = async (req, res) => {
+	try {
+		const userId = req.user.userId;
+
+		// Delete user
+		await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+
+		console.log('User deleted:', userId);
+		return res.json({ message: 'Account successfully deleted' });
+
+	} catch (err) {
+		console.error('Error in /delete:', err);
+		res.status(500).json({ error: 'Server error during deletion' });
+	}
+};

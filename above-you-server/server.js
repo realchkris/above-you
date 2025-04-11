@@ -7,12 +7,14 @@ const { PORT, ALLOWED_ORIGINS } = require('./config/config');
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
+const protectedRoutes = require('./routes/protectedRoutes');
 const weatherRoutes = require('./routes/weatherRoutes');
 const celestialRoutes = require('./routes/celestialRoutes');
 const geocodeRoutes = require('./routes/geocodeRoutes');
 const issRoutes = require('./routes/issRoutes');
 
-// Rate limiter
+// Middlewares
+const authMiddleware = require('./middlewares/authMiddleware');
 const { authLimiter, generalLimiter } = require('./middlewares/rateLimiter');
 
 const app = express();
@@ -44,6 +46,9 @@ app.use((req, res, next) => {
 	}
 	next();
 });
+
+// Apply middleware to all /api/protected routes (i.e. delete account route)
+app.use('/api/protected', authMiddleware, protectedRoutes);
 
 // Apply rate limiter only to auth
 app.use('/api/auth', authLimiter);

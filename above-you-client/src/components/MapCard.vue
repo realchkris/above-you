@@ -140,6 +140,7 @@ let lastOSMCoords = null;
 let lastReverseGeocodeFailed = false;
 let watchPositionId = null;
 let isWatchingPosition = false;
+let userMarkerCreated = false;
 
 const loadingKeys = ["coordinates", "location", "map"];
 loadingKeys.forEach(key => ui.setLoading(key, true));
@@ -168,30 +169,37 @@ async function handleGeolocationSuccess(pos) {
 	const lon = pos.coords.longitude;
 
 	console.log("[Geo] Success! Lat:", lat, "Lon:", lon);
-	if (!lat || !lon || !map.value) return;
+
+	if (!lat || !lon || !map.value) {
+		console.warn("[Geo] Invalid position or map not initialized.");
+		return;
+	}
 
 	ui.setLoading("coordinates", false);
 	userCoordinates.value = { lat, lon };
 
-	const shouldRecenter = shouldRecenterMap(lat, lon);
-	if (shouldRecenter) map.value.setView([lat, lon], 13);
-
-	const isFirstLoad = !lastOSMCoords || lastReverseGeocodeFailed;
-	if (isFirstLoad) {
+	// Recenter if needed
+	if (shouldRecenterMap(lat, lon)) {
+		console.log("[Geo] Recentering map.");
 		map.value.setView([lat, lon], 13);
-		userMarker = L.marker([lat, lon], { icon: defaultIcon }).addTo(map.value);
 	}
 
-	if (!lastOSMCoords || shouldUpdateLocation(lat, lon)) {
+	// Handle reverse geocoding on first load or after a failure
+	if (!lastOSMCoords || lastReverseGeocodeFailed || shouldUpdateLocation(lat, lon)) {
+		console.log("[Geo] Fetching reverse geocode...");
 		const locationName = await fetchReverseGeocode(lat, lon);
 		userLocation.value = locationName;
 		lastReverseGeocodeFailed = locationName === "❌";
 	}
 
-	if (userMarker) {
-		userMarker.setLatLng([lat, lon]);
-	} else {
+	// Handle marker creation (only once)
+	if (!userMarkerCreated) {
+		console.log("[Geo] Creating user marker.");
 		userMarker = L.marker([lat, lon], { icon: defaultIcon }).addTo(map.value);
+		userMarkerCreated = true;
+	} else if (userMarker) {
+		console.log("[Geo] Updating marker position.");
+		userMarker.setLatLng([lat, lon]);
 	}
 }
 
