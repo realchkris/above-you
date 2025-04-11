@@ -129,6 +129,7 @@ const map = ref(null);
 let userMarker = null;
 let lastOSMCoords = null;
 let lastReverseGeocodeFailed = false;
+let watchPositionId = null;
 
 // Constants
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -253,14 +254,13 @@ function setupGeolocation() {
 
 	ui.setLoading("coordinates", true);
 
-	navigator.geolocation.watchPosition(
+	if (watchPositionId) navigator.geolocation.clearWatch(watchPositionId); // safety check
+	watchPositionId = navigator.geolocation.watchPosition(
 		handleGeolocationSuccess,
 		handleGeolocationError,
-		{	enableHighAccuracy: true,
-			// timeout: GEO_TIMEOUT,
-			maximumAge: MAXIMUM_AGE	}
+		{ enableHighAccuracy: true, maximumAge: MAXIMUM_AGE }
 	);
-
+	
 }
 
 // Utilities
@@ -283,13 +283,17 @@ onMounted(async () => {
 	setupGeolocation();
 });
 
-// Clearing the map and their markers if the map component ever gets unmounted
+// Clearing the watchPosition calls & the map and their markers if the map component ever gets unmounted
 onBeforeUnmount(() => {
-  if (map.value) {
-    map.value.remove();
-    map.value = null;
-    userMarker = null;
-  }
+	if (watchPositionId) {
+		navigator.geolocation.clearWatch(watchPositionId);
+		watchPositionId = null;
+	}
+	if (map.value) {
+		map.value.remove();
+		map.value = null;
+		userMarker = null;
+	}
 });
 
 window.addEventListener("resize", () => {

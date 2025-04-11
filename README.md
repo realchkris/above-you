@@ -1,5 +1,8 @@
 # ☝️ Above You
 
+## 📋 Project Management
+- Track MVP progress here: [Trello Board](https://trello.com/b/o2zWZFid/above-you)
+
 ## 👓 Introduction
 A work-in-progress web application that provides real-time information on **celestial objects**, **weather conditions**, and **International Space Station flyovers** based on the user's geolocation.
 
