@@ -110,7 +110,7 @@ exports.login = async (req, res) => {
 
 };
 
-exports.delete = async (req, res) => {
+exports.deleteAccount = async (req, res) => {
 	try {
 		const userId = req.user.userId;
 
