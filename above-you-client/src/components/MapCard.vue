@@ -182,9 +182,14 @@ async function fetchReverseGeocode(lat, lon) {
 // Initialize Map
 async function initializeMap() {
 
-	if (map.value) return; // Map's already initialized (prevents map stacking)
+	console.log("[Map] initializeMap called");
 
-	console.log("[Map] Initializing...");
+	if (map.value) {
+		console.warn("[Map] Already initialized — skipping");
+		return;
+	}
+
+	console.log("[Map] Proceeding with map initialization...");
 
 	await nextTick();
 
@@ -208,7 +213,12 @@ async function handleGeolocationSuccess(pos) {
 	const lat = pos.coords.latitude;
 	const lon = pos.coords.longitude;
 
-	if (!lat || !lon || !map.value) return;
+	console.log("[Geo] Success! Lat:", lat, "Lon:", lon);
+
+	if (!lat || !lon || !map.value) {
+		console.warn("[Geo] Invalid position or map not ready.");
+	    return;
+	};
 
 	ui.setLoading("coordinates", false);
 	userCoordinates.value = { lat, lon };
@@ -229,8 +239,10 @@ async function handleGeolocationSuccess(pos) {
 	}
 
 	if (userMarker) {
+		console.log("[Geo] Updating marker position.");
 		userMarker.setLatLng([lat, lon]);
 	} else {
+		console.log("[Geo] Creating new user marker!");
 		userMarker = L.marker([lat, lon], { icon: defaultIcon }).addTo(map.value);
 	}
 
@@ -252,14 +264,22 @@ function handleGeolocationError(err) {
 
 function setupGeolocation() {
 
+	console.log("[Geo] Setting up geolocation...");
+
 	ui.setLoading("coordinates", true);
 
-	if (watchPositionId) navigator.geolocation.clearWatch(watchPositionId); // safety check
+	if (watchPositionId) {
+		navigator.geolocation.clearWatch(watchPositionId);
+		console.log("[Geo] Cleared old geolocation watch");
+	}
+
 	watchPositionId = navigator.geolocation.watchPosition(
 		handleGeolocationSuccess,
 		handleGeolocationError,
 		{ enableHighAccuracy: true, maximumAge: MAXIMUM_AGE }
 	);
+
+	console.log("[Geo] Watch started, ID:", watchPositionId);
 	
 }
 
@@ -285,15 +305,22 @@ onMounted(async () => {
 
 // Clearing the watchPosition calls & the map and their markers if the map component ever gets unmounted
 onBeforeUnmount(() => {
+
+	console.log("[Unmount] Cleaning up map and geolocation...");
+
 	if (watchPositionId) {
 		navigator.geolocation.clearWatch(watchPositionId);
+		console.log("[Unmount] Cleared geolocation watch");
 		watchPositionId = null;
 	}
+
 	if (map.value) {
 		map.value.remove();
+		console.log("[Unmount] Removed map instance");
 		map.value = null;
 		userMarker = null;
 	}
+	
 });
 
 window.addEventListener("resize", () => {
