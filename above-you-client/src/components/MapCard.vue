@@ -78,17 +78,17 @@
 		</FetchStateWrapper>
 
 		<!-- Map -->
-		<div class="grow w-full h-full">
-		
+		<div class="relative grow w-full h-full rounded overflow-hidden">
+
 			<transition name="fade" mode="out-in">
 				<SkeletonCard
 				v-if="ui.loading.map"
-				class="absolute top-0 left-0 rounded z-10 w-full h-full"
+				class="absolute inset-0 z-10"
 				/>
 			</transition>
 
 			<div id="map" class="z-0 w-full h-full"></div>
-
+			
 		</div>
 
 	</div>
@@ -97,7 +97,7 @@
 
 <script setup>
 
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, onBeforeUnmount } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -180,6 +180,8 @@ async function fetchReverseGeocode(lat, lon) {
 
 // Initialize Map
 async function initializeMap() {
+
+	if (map.value) return; // Map's already initialized (prevents map stacking)
 
 	console.log("[Map] Initializing...");
 
@@ -281,6 +283,15 @@ onMounted(async () => {
 	setupGeolocation();
 });
 
+// Clearing the map and their markers if the map component ever gets unmounted
+onBeforeUnmount(() => {
+  if (map.value) {
+    map.value.remove();
+    map.value = null;
+    userMarker = null;
+  }
+});
+
 window.addEventListener("resize", () => {
 	if (map.value) setTimeout(() => map.value.invalidateSize(), 300);
 });
@@ -288,10 +299,6 @@ window.addEventListener("resize", () => {
 </script>
 
 <style scoped>
-
-.skeleton-loader {
-	z-index: 10; /* Used to make sure it's above the map */
-}
 
 .map-container {
 	width: 100%;

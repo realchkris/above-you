@@ -4,28 +4,28 @@
 
 /* GLOBAL RESETS */
 html {
-  height: 100%;
-  margin: 0;
+	height: 100%;
+	margin: 0;
 }
 
 main {
-  height: 100%;
+	height: 100%;
 }
 
 body {
-  height: 100%;
-  min-width: 320px;
-  margin: 0;
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	height: 100%;
+	min-width: 320px;
+	margin: 0;
+	font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+	line-height: 1.5;
+	font-weight: 400;
+	color-scheme: light dark;
+	color: rgba(255, 255, 255, 0.87);
+	background-color: #242424;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 /* TYPOGRAPHY */
@@ -136,9 +136,10 @@ button:focus-visible {
 }
 
 .error-container {
-	@apply base-container bg-red-500 text-white font-bold;
-	@apply fixed top-4 left-1/2 transform -translate-x-1/2 transition-opacity duration-500 ease-in-out;
-	opacity: 1;
+	@apply base-container bg-red-500 text-white font-bold text-center;
+	@apply p-2 flex items-center justify-center;
+	@apply fixed top-4 left-1/2 transform -translate-x-1/2 z-50;
+	@apply transition-opacity duration-500 ease-in-out;
 }
 
 /* IMAGE UTILITIES */
