@@ -1,45 +1,49 @@
 <template>
 	<div :class="['w-full', { 'flex-grow': !isOpen }]">
-
+		
+		<!-- Card Wrapper -->
 		<div
-		class="base-container text-white flex items-center justify-between cursor-pointer"
-		:class="[bgColor, {'h-full': !isOpen}]"
-		@click="isOpen = !isOpen"
+			class="base-container relative text-white flex items-center justify-between cursor-pointer overflow-hidden"
+			:class="[bgColor, { 'h-full': !isOpen }]"
+			@click="isOpen = !isOpen"
 		>
+			<!-- Decorative Background Image -->
+			<img
+				v-if="icon"
+				:src="icon"
+				alt="Background Icon"
+				class="absolute opacity-30 w-40 h-40 -right-4 pointer-events-none select-none z-0"
+			/>
 
-			<!-- Title -->
-			<div class="flex items-center gap-4">
-				<img v-if="icon" :src="icon" alt="Icon" class="image-sm" />
-				<div class="font-bold">{{ title }}</div>
+			<!-- Foreground Content -->
+			<div class="relative z-10 flex items-center gap-4">
+				<div :class="['font-semibold transition-all duration-300', isOpen ? 'text-sm md:text-base' : 'text-base md:text-2xl']">
+					{{ title }}
+				</div>
 			</div>
 
-			<!-- Button -->
+			<!-- Chevron Toggle -->
 			<transition name="chevron-fade" mode="out-in">
 				<component
-				:is="isOpen ? ChevronUp : ChevronDown"
-				class="w-4 h-4 text-gray-400"
-				:key="isOpen"
+					:is="isOpen ? ChevronUp : ChevronDown"
+					class="w-4 h-4 text-white/40 z-10"
+					:key="isOpen"
 				/>
 			</transition>
-
 		</div>
 
+		<!-- Collapsible Slot Content -->
 		<transition name="fade">
-			<div
-			v-if="isOpen"
-			class="mt-4 w-full">
+			<div v-if="isOpen" class="mt-4 w-full">
 				<slot />
 			</div>
 		</transition>
-
 	</div>
-
 </template>
 
 <script setup>
-
 import { ref } from "vue";
-import { ChevronUp, ChevronDown } from "lucide-vue-next"
+import { ChevronUp, ChevronDown } from "lucide-vue-next";
 
 const props = defineProps({
 	title: String,
@@ -55,5 +59,4 @@ const props = defineProps({
 });
 
 const isOpen = ref(props.initiallyOpen);
-
 </script>
