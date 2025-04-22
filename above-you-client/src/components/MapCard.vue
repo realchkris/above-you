@@ -25,10 +25,31 @@
 
 			<!-- Data -->
 			<template #default>
-				<div class="base-container ay-gradient-lavender text-white mb-4 flex justify-center items-center w-full">
-					<div class="flex flex-col items-center text-center w-full break-words whitespace-pre-wrap px-4">
-						<img :src="youIcon" class="image-sm" />
-						<span>{{ userLocation }}</span>
+				<div class="base-container ay-gradient-lavender text-white mb-4 w-full flex justify-center items-center">
+					<div class="flex flex-col text-center gap-4 w-full">
+
+						<img :src="youIcon" class="image-sm self-center" />
+
+						<!-- Address -->
+						<template v-if="parsedAddress">
+							<div class="base-container bg-ay-lavender text-2xl">
+								{{ countryFlag }} {{ parsedAddress[0] }}
+							</div>
+
+							<div class="grid grid-cols-2 gap-4">
+								<div
+								v-for="(line, idx) in parsedAddress.slice(1)"
+								:key="idx"
+								class="base-container bg-ay-lavender text-sm"
+								:class="{
+									'col-span-2': (parsedAddress.slice(1).length % 2 === 1) && (idx === parsedAddress.slice(1).length - 1)
+								}"
+								>
+									{{ line }}
+								</div>
+							</div>
+						</template>
+
 					</div>
 				</div>
 			</template>
@@ -98,10 +119,13 @@
 <script setup>
 
 // Imports
-import { ref, onMounted, nextTick, onBeforeUnmount } from "vue";
+import { ref, onMounted, nextTick, onBeforeUnmount, computed } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { storeToRefs } from "pinia";
+
+import { countryCodeToEmoji } from '@/utils/flags'
+import { getCountryCode } from '@/utils/countries'
 
 import { getDistance } from "@/utils/geolocation.js";
 import SkeletonCard from "@/components/SkeletonCard.vue";
@@ -136,14 +160,30 @@ const ui = useUIStore();
 
 const map = ref(null);
 let userMarker = null;
+let userMarkerCreated = false;
 let lastOSMCoords = null;
 let lastReverseGeocodeFailed = false;
 let watchPositionId = null;
 let isWatchingPosition = false;
-let userMarkerCreated = false;
 
 const loadingKeys = ["coordinates", "location", "map"];
 loadingKeys.forEach(key => ui.setLoading(key, true));
+
+// Split address string by comma and trim
+const parsedAddress = computed(() => {
+	if (!userLocation.value || userLocation.value === '❌') return null;
+	return userLocation.value.split(',').map(part => part.trim()).reverse();
+});
+
+// Country flag emoji
+const countryFlag = computed(() => {
+
+	if (!parsedAddress.value || parsedAddress.value.length === 0) return ''
+	const countryName = parsedAddress.value[0]
+	const code = getCountryCode(countryName)
+	return code ? countryCodeToEmoji(code) : ''
+
+})
 
 // Map & Geolocation
 async function initializeMap() {
