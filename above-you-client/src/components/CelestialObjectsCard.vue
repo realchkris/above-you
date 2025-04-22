@@ -12,9 +12,9 @@
 			<!-- Loading -->
 			<template #loading>
 				<div class="flex flex-col gap-4 items-center w-full">
-					<SkeletonCard class="min-h-16 w-full" />
-					<SkeletonCard class="min-h-16 w-full" />
-					<SkeletonCard class="min-h-16 w-full" />
+					<SkeletonCard class="skeleton-data" />
+					<SkeletonCard class="skeleton-data" />
+					<SkeletonCard class="skeleton-data" />
 				</div>
 			</template>
 
@@ -44,15 +44,15 @@
 
 								<!-- Celestial object details -->
 								<div class="flex gap-4 mt-4">
-									<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
+									<div class="bg-ay-purple vertical-data-container">
 										<span class="text-xs">Alt</span>
 										<span>{{ object.altitude != null ? object.altitude.toFixed(1) : "–" }}°</span>
 									</div>
-									<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
+									<div class="bg-ay-purple vertical-data-container">
 										<span class="text-xs">Az</span>
 										<span>{{ object.azimuth != null ? object.azimuth.toFixed(1) : "–" }}°</span>
 									</div>
-									<div class="base-container bg-ay-purple flex grow flex-col items-center gap-2">
+									<div class="bg-ay-purple vertical-data-container">
 										<span class="text-xs">Mag</span>
 										<span>{{ object.magnitude ?? "–" }}</span>
 									</div>

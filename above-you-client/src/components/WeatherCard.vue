@@ -9,9 +9,9 @@
 			<!-- Loading -->
 			<template #loading>
 				<div class="flex flex-col gap-4 w-full">
-					<SkeletonCard class="min-h-16 w-full" />
-					<SkeletonCard class="min-h-16 w-full" />
-					<SkeletonCard class="min-h-16 w-full" />
+					<SkeletonCard class="skeleton-data" />
+					<SkeletonCard class="skeleton-data" />
+					<SkeletonCard class="skeleton-data" />
 				</div>
 			</template>
 
@@ -26,20 +26,20 @@
 				<div class="flex flex-col gap-4 w-full">
 
 					<!-- Condition -->
-					<div class="base-container bg-ay-lavender flex items-center justify-center gap-2">
+					<div class="bg-ay-lavender vertical-data-container">
 						<img class="image-sm" :src="getWeatherIconUrl(weather.weathercode)" alt="Weather Icon" />
 						<span class="text-xs">{{ weatherDescription }}</span>
 					</div>
 
 					<!-- Temperature -->
-					<div class="base-container bg-ay-lavender flex items-center justify-center gap-2">
+					<div class="bg-ay-lavender vertical-data-container">
 						<img :src="termometerIcon" alt="Thermometer Icon" class="image-sm" />
 						<img :src="getTemperatureIconUrl(weather.temperature)" alt="Temperature Icon" class="image-sm" />
 						<span class="text-xs">{{ weather.temperature }}°C</span>
 					</div>
 
 					<!-- Wind -->
-					<div class="base-container bg-ay-lavender flex items-center justify-center gap-2">
+					<div class="bg-ay-lavender vertical-data-container">
 						<img class="image-sm" :src="getWindIconUrl(weather.windspeed)" alt="Wind Icon" />
 						<span>{{ weather.windspeed }} km/h @ {{ weather.winddirection }}°</span>
 					</div>

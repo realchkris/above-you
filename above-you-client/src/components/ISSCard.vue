@@ -9,12 +9,12 @@
 				<div class="flex flex-col gap-4 w-full">
 
 					<div class="flex justify-center gap-4 w-full">
-						<SkeletonCard class="min-h-16 w-full" />
-						<SkeletonCard class="min-h-16 w-full" />
+						<SkeletonCard class="skeleton-data" />
+						<SkeletonCard class="skeleton-data" />
 					</div>
 
 					<div class="flex justify-center w-full">
-						<SkeletonCard class="min-h-16 w-full" />
+						<SkeletonCard class="skeleton-data" />
 					</div>
 
 				</div>
@@ -31,23 +31,23 @@
 
 					<!-- ISS Coordinates -->
 					<div class="flex gap-4 w-full">
-						<div class="base-container bg-ay-teal flex flex-col items-center flex-1">
+						<div class="bg-ay-teal vertical-data-container">
 							<span class="text-xs">Lat</span>
 							<span>{{ issCoordinates.lat ?? "–" }}</span>
 						</div>
 
-						<div class="base-container bg-ay-teal flex flex-col items-center flex-1">
+						<div class="bg-ay-teal vertical-data-container">
 							<span class="text-xs">Lon</span>
 							<span>{{ issCoordinates.lon ?? "–" }}</span>
 						</div>
 					</div>
 
 					<!-- Distance -->
-					<div class="base-container bg-ay-teal flex flex-col items-center w-full">
+					<div class="w-full bg-ay-teal vertical-data-container">
 						<span class="text-xs">🛰️ — 👤</span>
 						<div class="w-full">
 							<span v-if="ui.loading.issDistance">
-								<SkeletonCard class="min-h-16 w-full" />
+								<SkeletonCard class="skeleton-data" />
 							</span>
 							<span v-else>{{ distanceToISS ?? "–" }}</span>
 						</div>

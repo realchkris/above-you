@@ -135,18 +135,29 @@ button:focus-visible {
 	@apply ay-gradient-dark p-4 w-screen flex justify-between fixed top-0 left-0 z-50;
 }
 
-.error-container {
-	@apply base-container bg-red-500 text-white font-bold text-center;
-	@apply p-2 flex items-center justify-center;
-	@apply fixed top-4 left-1/2 transform -translate-x-1/2 z-50;
+.floating-container {
+	@apply fixed top-16 left-1/2 transform -translate-x-1/2 z-50;
 	@apply transition-opacity duration-500 ease-in-out;
+	@apply p-2 flex items-center justify-center;
+	@apply base-container font-bold text-center;
+}
+
+.error-container {
+	@apply bg-red-500 text-white;
+	@apply floating-container;
 }
 
 .success-container {
-	@apply base-container bg-ay-purple text-white font-bold text-center;
-	@apply p-2 flex items-center justify-center;
-	@apply fixed top-4 left-1/2 transform -translate-x-1/2 z-50;
-	@apply transition-opacity duration-500 ease-in-out;
+	@apply bg-ay-purple text-white;
+	@apply floating-container;
+}
+
+.vertical-data-container {
+	@apply base-container flex grow flex-col items-center gap-1;
+}
+
+.black-overlay {
+	@apply fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50;
 }
 
 /* IMAGE UTILITIES */
@@ -184,17 +195,21 @@ button:focus-visible {
 }
 
 /* BUTTON UTILITIES */
-.round-button {
-	@apply w-12 h-12 flex items-center justify-center rounded-full shadow-md transition duration-200 ease-in-out p-1;
+.primary-button {
+	@apply flex items-center justify-center rounded-md shadow-md transition duration-200 ease-in-out p-2;
 }
 
-.primary-button {
-	@apply flex items-center justify-center rounded-md shadow-md transition duration-200 ease-in-out p-1;
+.primary-button-base {
+  @apply primary-button bg-ay-lavender hover:border-[#604FD6] border-2 text-white;
+}
+
+.primary-button-danger {
+  @apply primary-button bg-red-600 hover:bg-red-700 text-white;
 }
 
 /* INPUTS */
 .primary-input {
-	@apply flex items-center justify-center rounded-md shadow-md transition duration-200 ease-in-out p-1;
+	@apply flex items-center justify-center rounded-md shadow-md transition duration-200 ease-in-out p-2;
 }
 
 /* LOADERS */
@@ -214,8 +229,12 @@ button:focus-visible {
 }
 
 /* SKELETON */
-.base-skeleton {
+.skeleton-base {
 	@apply rounded-md shadow-md bg-ay-lavender animate-pulse;
+}
+
+.skeleton-data {
+	@apply min-h-16 w-full;
 }
 
 /* TRANSITIONS */

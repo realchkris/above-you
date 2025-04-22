@@ -20,7 +20,7 @@
 				<!-- Delete Account Button (Only if logged in) -->
 				<div v-if="auth.isLoggedIn" class="mt-auto pt-4">
 					<button
-						class="primary-button bg-red-600 hover:bg-red-700 w-full"
+						class="primary-button-danger w-full"
 						@click="ui.showConfirmationModal"
 					>
 						Delete Account
@@ -33,7 +33,7 @@
 		<!-- Backdrop -->
 		<div
 			v-if="open"
-			class="fixed inset-0 bg-black bg-opacity-50 z-40"
+			class="black-overlay"
 			@click="$emit('close')"
 		></div>
 

@@ -1,3 +1,3 @@
 <template>
-	<div class="base-skeleton" />
+	<div class="skeleton-base" />
 </template>

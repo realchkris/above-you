@@ -2,7 +2,7 @@
 
 	<!-- Modal Overlay -->
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20"
+		class="black-overlay"
 		@click.self="closeOnOutside"
 	>
 		<!-- Modal Container -->
@@ -10,7 +10,7 @@
 
 			<!-- Close Button -->
 			<button
-				class="absolute top-2 right-2 round-button bg-ay-lavender"
+				class="absolute top-2 right-2 primary-button-base bg-ay-lavender"
 				@click="emitClose"
 				aria-label="Close modal"
 			>
@@ -21,21 +21,21 @@
 			<h2 class="text-xl font-semibold mb-4 text-center">Welcome</h2>
 
 			<!-- Info Box -->
-			<div class="base-container text-xs bg-yellow-200 text-black text-center m-3">
+			<div class="base-container w-full text-xs bg-yellow-200 text-black text-center mb-3">
 				⚠️ This is a demo. <br> Your data is <strong>temporary</strong> and may be <strong>deleted</strong> periodically. <br> Feel free to use a mock email.
 			</div>
 
 			<!-- Toggle -->
 			<div class="flex justify-center gap-2 mb-5">
 				<button
-					class="text-base px-3 py-1.5 rounded"
+					class="primary-button w-full"
 					@click="mode = 'login'"
 					:class="{ 'bg-ay-purple font-bold': mode === 'login' }"
 				>
 					Login
 				</button>
 				<button
-					class="text-base px-3 py-1.5 rounded"
+					class="primary-button w-full"
 					@click="mode = 'register'"
 					:class="{ 'bg-ay-teal font-bold text-black': mode === 'register' }"
 				>
@@ -44,7 +44,7 @@
 			</div>
 
 			<!-- Form -->
-			<form @submit.prevent="submit" class="space-y-4 flex flex-col">
+			<form @submit.prevent="submit" class="space-y-4 flex flex-col w-full">
 
 				<!-- Email -->
 				<div>
@@ -77,14 +77,14 @@
 				<!-- Submit Button or Skeleton Loader -->
 				<transition name="fade" mode="out-in">
 				  <div v-if="ui.loading.auth" class="w-full flex justify-center">
-					<SkeletonCard class="h-12 w-48" />
+					<SkeletonCard class="min-h-12 w-full" />
 				  </div>
 
 				  <button
 					v-else
 					type="submit"
 					:class="[
-						'primary-button py-3 font-semibold w-full mx-auto',
+						'primary-button font-semibold w-full',
 						mode === 'login' ? 'bg-ay-purple' : 'bg-ay-teal text-black'
 					]"
 				  >

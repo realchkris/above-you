@@ -7,7 +7,7 @@
 		<transition name="fade">
 			<div
 				v-if="ui.globalError"
-				class="error-container fixed top-4 left-1/2 transform -translate-x-1/2 z-50"
+				class="error-container"
 			>
 				{{ ui.globalError }}
 			</div>
@@ -17,7 +17,7 @@
 		<transition name="fade">
 			<div
 				v-if="ui.globalSuccess"
-				class="success-container fixed top-16 left-1/2 transform -translate-x-1/2 z-50"
+				class="success-container"
 			>
 				{{ ui.globalSuccess }}
 			</div>
