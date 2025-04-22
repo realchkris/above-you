@@ -34,11 +34,13 @@
 						<div class="bg-ay-teal vertical-data-container">
 							<span class="text-xs">Lat</span>
 							<span>{{ issCoordinates.lat ?? "–" }}</span>
+							<InfoTooltip message="ISS latitude in real-time." />
 						</div>
 
 						<div class="bg-ay-teal vertical-data-container">
 							<span class="text-xs">Lon</span>
 							<span>{{ issCoordinates.lon ?? "–" }}</span>
+							<InfoTooltip message="ISS longitude in real-time." />
 						</div>
 					</div>
 
@@ -51,6 +53,7 @@
 							</span>
 							<span v-else>{{ distanceToISS ?? "–" }}</span>
 						</div>
+						<InfoTooltip message="Real-time distance between you and the ISS." />
 					</div>
 
 				</div>
@@ -67,6 +70,7 @@ import { ref, watch, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 
 import SkeletonCard from "@/components/SkeletonCard.vue";
+import InfoTooltip from "@/components/InfoTooltip.vue";
 import FetchStateWrapper from "@/components/FetchStateWrapper.vue";
 
 import { getDistance } from "@/utils/geolocation.js";

@@ -12,8 +12,11 @@
 			<Menu class="icon-button icon-sm" aria-hidden="true" />
 		</button>
 
-		<!-- Above You Logo -->
-		<img class="image-sm" :src="logo" alt="Above You Logo" />
+		<!-- Logo + Text Wrapper -->
+		<div class="flex items-center gap-2">
+		  <img class="image-sm" :src="logo" alt="Above You Logo" />
+		  <span class="hidden md:inline font-semibold text-white text-lg">Above You</span>
+		</div>
 
 		<!-- Login / Logout Section -->
 		<transition name="fade" mode="out-in">

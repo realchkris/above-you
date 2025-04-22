@@ -47,14 +47,17 @@
 									<div class="bg-ay-purple vertical-data-container">
 										<span class="text-xs">Alt</span>
 										<span>{{ object.altitude != null ? object.altitude.toFixed(1) : "–" }}°</span>
+										<InfoTooltip message="Angle above the horizon in degrees (0° = horizon, 90° = directly overhead)." />
 									</div>
 									<div class="bg-ay-purple vertical-data-container">
 										<span class="text-xs">Az</span>
 										<span>{{ object.azimuth != null ? object.azimuth.toFixed(1) : "–" }}°</span>
+										<InfoTooltip message="Compass direction (0° = North, 90° = East, etc.)." />
 									</div>
 									<div class="bg-ay-purple vertical-data-container">
 										<span class="text-xs">Mag</span>
 										<span>{{ object.magnitude ?? "–" }}</span>
+										<InfoTooltip message="Indicates brightness (lower is brighter)." />
 									</div>
 								</div>
 
@@ -82,6 +85,7 @@ import { storeToRefs } from "pinia";
 
 import { getDistance } from "@/utils/geolocation";
 import SkeletonCard from "@/components/SkeletonCard.vue";
+import InfoTooltip from "@/components/InfoTooltip.vue";
 import FetchStateWrapper from "@/components/FetchStateWrapper.vue";
 
 import { useUserLocationStore } from "@/stores/userLocationStore";

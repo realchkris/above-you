@@ -29,19 +29,21 @@
 					<div class="bg-ay-lavender vertical-data-container">
 						<img class="image-sm" :src="getWeatherIconUrl(weather.weathercode)" alt="Weather Icon" />
 						<span class="text-xs">{{ weatherDescription }}</span>
+						<InfoTooltip message="Current sky condition." />
 					</div>
 
 					<!-- Temperature -->
 					<div class="bg-ay-lavender vertical-data-container">
-						<img :src="termometerIcon" alt="Thermometer Icon" class="image-sm" />
 						<img :src="getTemperatureIconUrl(weather.temperature)" alt="Temperature Icon" class="image-sm" />
 						<span class="text-xs">{{ weather.temperature }}°C</span>
+						<InfoTooltip message="Current air temperature at your location, measured in Celsius." />
 					</div>
 
 					<!-- Wind -->
 					<div class="bg-ay-lavender vertical-data-container">
 						<img class="image-sm" :src="getWindIconUrl(weather.windspeed)" alt="Wind Icon" />
 						<span>{{ weather.windspeed }} km/h @ {{ weather.winddirection }}°</span>
+						<InfoTooltip message="Wind speed in km/h and the direction it's coming from, in degrees." />
 					</div>
 
 				</div>
@@ -62,6 +64,7 @@ import { storeToRefs } from "pinia";
 
 import FetchStateWrapper from "@/components/FetchStateWrapper.vue";
 import SkeletonCard from "@/components/SkeletonCard.vue";
+import InfoTooltip from "@/components/InfoTooltip.vue";
 import { getDistance } from "@/utils/geolocation";
 
 import { useUserLocationStore } from "@/stores/userLocationStore";
@@ -71,8 +74,6 @@ import { usePollingStore } from "@/stores/pollingStore";
 import { getWeatherDescription, getWeatherIconUrl } from "@/utils/weatherCodes";
 import { getTemperatureIconUrl } from "@/utils/temperature";
 import { getWindIconUrl } from "@/utils/wind";
-
-import termometerIcon from "@/assets/temperature/thermometer.png";
 
 // Stores
 const locationStore = useUserLocationStore();
